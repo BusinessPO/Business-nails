@@ -3,174 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registrar cita - Título</title>
+  <title>Gracias</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #fff0f5;
-      padding: 20px;
       text-align: center;
+      padding: 40px;
     }
-
     h1 {
       color: #d36ba0;
-      margin-bottom: 10px;
-    }
-
-    .info {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #444;
-    }
-
-    form input, form select, form button {
-      display: block;
-      width: 80%;
-      max-width: 300px;
-      margin: 10px auto;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #d36ba0;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #b7598d;
-    }
-
-    .idioma-select {
-      margin-top: 20px;
-    }
-
-    select#idioma {
-      padding: 8px;
-      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <h1 id="titulo">Registrar cita</h1>
-
-  <div class="info" id="infoCita">
-    Cargando información de tu cita...
-  </div>
-
-  <form id="registroForm" onsubmit="return confirmarCita()">
-    <input type="text" id="nombre" placeholder="Nombre" required />
-    <input type="text" id="apellido" placeholder="Apellido" required />
-    <select id="metodoPago" required>
-      <option value="">Método de pago al finalizar</option>
-      <option value="Efectivo">Efectivo</option>
-      <option value="Transferencia">Transferencia</option>
-      <option value="Tarjeta">Tarjeta</option>
-    </select>
-    <button type="submit" id="btnConfirmar">Confirmar cita</button>
-  </form>
-
-  <div class="idioma-select">
-    <label for="idioma">🌐 Cambiar idioma:</label>
-    <select id="idioma" onchange="cambiarIdioma(this.value)">
-      <option value="es">Español latino</option>
-      <option value="en">English</option>
-    </select>
-  </div>
+  <h1 id="mensaje"></h1>
 
   <script>
-    const diseño = localStorage.getItem('disenoSeleccionado') || 'Sin diseño';
-    const fecha = localStorage.getItem('fechaSeleccionada') || 'Sin fecha';
-    const hora = localStorage.getItem('horaSeleccionada') || 'Sin hora';
-    const duracion = localStorage.getItem('duracion') || '60';
-
-    function mostrarResumen() {
-      const idioma = localStorage.getItem("idioma") || "es";
-      const textos = {
-        es: `Diseño: ${diseño}\nFecha: ${fecha}\nHora: ${hora}`,
-        en: `Design: ${diseño}\nDate: ${fecha}\nTime: ${hora}`
-      };
-      document.getElementById('infoCita').innerText = textos[idioma];
-    }
-
-    function confirmarCita() {
-      const nombre = document.getElementById('nombre').value.trim();
-      const apellido = document.getElementById('apellido').value.trim();
-      const metodoPago = document.getElementById('metodoPago').value;
-      const idioma = localStorage.getItem("idioma") || "es";
-
-      if (!nombre || !apellido || !metodoPago) {
-        alert(idioma === "en"
-          ? "Please complete all fields."
-          : "Por favor completa todos los campos.");
-        return false;
-      }
-
-      localStorage.setItem("nombreCliente", nombre);
-      localStorage.setItem("apellidoCliente", apellido);
-      localStorage.setItem("metodoPago", metodoPago);
-
-      const nuevaCita = {
-        diseño,
-        fecha,
-        hora,
-        duracion,
-        nombre,
-        apellido,
-        metodoPago
-      };
-
-      const citas = JSON.parse(localStorage.getItem("citas")) || [];
-      citas.push(nuevaCita);
-      localStorage.setItem("citas", JSON.stringify(citas));
-
-      window.location.href = 'gracias.html';
-      return false;
-    }
-
-    function cambiarIdioma(idioma) {
-      localStorage.setItem("idioma", idioma);
-      aplicarIdioma();
+    function getQueryParam(param) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(param);
     }
 
     function aplicarIdioma() {
-      const idioma = localStorage.getItem("idioma") || "es";
+      const idioma = localStorage.getItem('idioma') || 'es';
+
       const textos = {
-        es: {
-          titulo: "Registrar cita",
-          btnConfirmar: "Confirmar cita",
-          metodoDefault: "Método de pago al finalizar",
-          efectivo: "Efectivo",
-          transferencia: "Transferencia",
-          tarjeta: "Tarjeta"
-        },
-        en: {
-          titulo: "Register Appointment",
-          btnConfirmar: "Confirm appointment",
-          metodoDefault: "Payment method at the end",
-          efectivo: "Cash",
-          transferencia: "Bank transfer",
-          tarjeta: "Card"
-        }
+        es: nombre => `Gracias, ${nombre}, por tu cita. ¡Te esperamos!`,
+        en: nombre => `Thank you, ${nombre}, for your appointment. We look forward to seeing you!`
       };
 
-      const t = textos[idioma];
-      document.getElementById("titulo").innerText = t.titulo;
-      document.getElementById("btnConfirmar").innerText = t.btnConfirmar;
-
-      const metodoPago = document.getElementById("metodoPago");
-      metodoPago.options[0].text = t.metodoDefault;
-      metodoPago.options[1].text = t.efectivo;
-      metodoPago.options[2].text = t.transferencia;
-      metodoPago.options[3].text = t.tarjeta;
-
-      document.getElementById("idioma").value = idioma;
-
-      mostrarResumen();
+      const nombre = getQueryParam('nombre') || 'Cliente';
+      document.getElementById('mensaje').innerText = textos[idioma](nombre);
     }
 
     aplicarIdioma();
