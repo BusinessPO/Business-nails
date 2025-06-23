@@ -44,10 +44,19 @@
     button:hover {
       background-color: #b7598d;
     }
+
+    .idioma-select {
+      margin-top: 20px;
+    }
+
+    select#idioma {
+      padding: 8px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
-  <h1>Registrar cita</h1>
+  <h1 id="titulo">Registrar cita</h1>
 
   <div class="info" id="infoCita">
     Cargando información de tu cita...
@@ -62,8 +71,16 @@
       <option value="Transferencia">Transferencia</option>
       <option value="Tarjeta">Tarjeta</option>
     </select>
-    <button type="submit">Confirmar cita</button>
+    <button type="submit" id="btnConfirmar">Confirmar cita</button>
   </form>
+
+  <div class="idioma-select">
+    <label for="idioma">🌐 Cambiar idioma:</label>
+    <select id="idioma" onchange="cambiarIdioma(this.value)">
+      <option value="es">Español latino</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
   <script>
     const diseño = localStorage.getItem('disenoSeleccionado') || 'Sin diseño';
@@ -71,26 +88,32 @@
     const hora = localStorage.getItem('horaSeleccionada') || 'Sin hora';
     const duracion = localStorage.getItem('duracion') || '60';
 
-    // Mostrar resumen
-    document.getElementById('infoCita').innerText =
-      `Diseño: ${diseño}\nFecha: ${fecha}\nHora: ${hora}`;
+    function mostrarResumen() {
+      const idioma = localStorage.getItem("idioma") || "es";
+      const textos = {
+        es: `Diseño: ${diseño}\nFecha: ${fecha}\nHora: ${hora}`,
+        en: `Design: ${diseño}\nDate: ${fecha}\nTime: ${hora}`
+      };
+      document.getElementById('infoCita').innerText = textos[idioma];
+    }
 
     function confirmarCita() {
       const nombre = document.getElementById('nombre').value.trim();
       const apellido = document.getElementById('apellido').value.trim();
       const metodoPago = document.getElementById('metodoPago').value;
+      const idioma = localStorage.getItem("idioma") || "es";
 
       if (!nombre || !apellido || !metodoPago) {
-        alert("Por favor completa todos los campos.");
+        alert(idioma === "en"
+          ? "Please complete all fields."
+          : "Por favor completa todos los campos.");
         return false;
       }
 
-      // Guardar en localStorage para mostrar en la página final
-      localStorage.setItem('nombreCliente', nombre);
-      localStorage.setItem('apellidoCliente', apellido);
-      localStorage.setItem('metodoPago', metodoPago);
+      localStorage.setItem("nombreCliente", nombre);
+      localStorage.setItem("apellidoCliente", apellido);
+      localStorage.setItem("metodoPago", metodoPago);
 
-      // Guardar cita en un array de citas (para luego bloquear horarios)
       const nuevaCita = {
         diseño,
         fecha,
@@ -101,16 +124,56 @@
         metodoPago
       };
 
-      const citas = JSON.parse(localStorage.getItem('citas')) || [];
+      const citas = JSON.parse(localStorage.getItem("citas")) || [];
       citas.push(nuevaCita);
-      localStorage.setItem('citas', JSON.stringify(citas));
+      localStorage.setItem("citas", JSON.stringify(citas));
 
-      // (Más adelante: aquí enviamos a WhatsApp también)
-
-      // Redirigir a página de agradecimiento
       window.location.href = 'gracias.html';
       return false;
     }
+
+    function cambiarIdioma(idioma) {
+      localStorage.setItem("idioma", idioma);
+      aplicarIdioma();
+    }
+
+    function aplicarIdioma() {
+      const idioma = localStorage.getItem("idioma") || "es";
+      const textos = {
+        es: {
+          titulo: "Registrar cita",
+          btnConfirmar: "Confirmar cita",
+          metodoDefault: "Método de pago al finalizar",
+          efectivo: "Efectivo",
+          transferencia: "Transferencia",
+          tarjeta: "Tarjeta"
+        },
+        en: {
+          titulo: "Register Appointment",
+          btnConfirmar: "Confirm appointment",
+          metodoDefault: "Payment method at the end",
+          efectivo: "Cash",
+          transferencia: "Bank transfer",
+          tarjeta: "Card"
+        }
+      };
+
+      const t = textos[idioma];
+      document.getElementById("titulo").innerText = t.titulo;
+      document.getElementById("btnConfirmar").innerText = t.btnConfirmar;
+
+      const metodoPago = document.getElementById("metodoPago");
+      metodoPago.options[0].text = t.metodoDefault;
+      metodoPago.options[1].text = t.efectivo;
+      metodoPago.options[2].text = t.transferencia;
+      metodoPago.options[3].text = t.tarjeta;
+
+      document.getElementById("idioma").value = idioma;
+
+      mostrarResumen();
+    }
+
+    aplicarIdioma();
   </script>
 </body>
 </html>
