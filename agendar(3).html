@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agendar cita - Título</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #d36ba0;
+      margin-bottom: 20px;
+    }
+    label, select, button {
+      display: block;
+      margin: 15px auto;
+      font-size: 18px;
+      width: 80%;
+      max-width: 320px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    button {
+      background-color: #d36ba0;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #b7598d;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agenda tu cita</h1>
+
+  <form id="agendarForm" onsubmit="return enviarDatos()">
+    <label for="fecha">Selecciona la fecha (próximas 2 semanas):</label>
+    <select id="fecha" name="fecha" required></select>
+
+    <label for="hora">Selecciona la hora:</label>
+    <select id="hora" name="hora" required>
+      <!-- Horarios de 10 a 18 h -->
+    </select>
+
+    <button type="submit">Siguiente</button>
+  </form>
+
+  <script>
+    // Cargar fechas de los próximos 14 días
+    function cargarFechas() {
+      const selectFecha = document.getElementById('fecha');
+      const hoy = new Date();
+      for (let i = 0; i < 14; i++) {
+        const dia = new Date(hoy);
+        dia.setDate(hoy.getDate() + i);
+        const opcion = document.createElement('option');
+        opcion.value = dia.toISOString().slice(0,10);
+        opcion.textContent = dia.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'short' });
+        selectFecha.appendChild(opcion);
+      }
+    }
+
+    // Cargar horarios
+    function cargarHoras() {
+      const selectHora = document.getElementById('hora');
+      for(let h=10; h <= 18; h++){
+        const opcion = document.createElement('option');
+        let horaStr = h.toString().padStart(2,'0') + ':00';
+        opcion.value = horaStr;
+        opcion.textContent = h + ':00';
+        selectHora.appendChild(opcion);
+      }
+    }
+
+    function enviarDatos() {
+      const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
+      if(!fecha || !hora){
+        alert('Por favor selecciona fecha y hora');
+        return false;
+      }
+
+      // Guardar fecha y hora para usar en registro.html
+      localStorage.setItem('fechaSeleccionada', fecha);
+      localStorage.setItem('horaSeleccionada', hora);
+
+      // Redirigir a registro.html
+      window.location.href = 'registro.html';
+      return false; // prevenir submit normal
+    }
+
+    cargarFechas();
+    cargarHoras();
+  </script>
+</body>
+</html>
