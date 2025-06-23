@@ -3,111 +3,104 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gracias - Título</title>
+  <title>Catálogo de diseños</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #fff0f5;
+      padding: 20px;
       text-align: center;
-      padding: 60px 20px;
     }
-
     h1 {
       color: #d36ba0;
-      font-size: 32px;
+      margin-bottom: 25px;
+    }
+    .diseno {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #d36ba0aa;
+      padding: 20px;
       margin-bottom: 20px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
     }
-
-    p {
-      font-size: 18px;
-      color: #444;
-      margin-bottom: 10px;
+    .diseno h2 {
+      color: #b03050;
+      margin-top: 0;
     }
-
-    .volver {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 12px 24px;
+    .diseno p {
+      margin: 6px 0;
+    }
+    .diseno button {
       background-color: #d36ba0;
       color: white;
       border: none;
+      padding: 10px 20px;
       border-radius: 10px;
-      text-decoration: none;
+      cursor: pointer;
       font-size: 16px;
+      margin-top: 10px;
     }
-
-    .volver:hover {
+    .diseno button:hover {
       background-color: #b7598d;
-    }
-
-    .idioma-select {
-      margin-top: 30px;
-    }
-
-    select {
-      padding: 8px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
-  <h1 id="mensajeGracias">¡Gracias por tu cita!</h1>
-  <p id="textoExtra">Recibirás un mensaje el día de tu cita con más detalles.</p>
-  <p id="textoDudas">Si tienes dudas, puedes escribirnos por WhatsApp.</p>
+  <h1>Catálogo de diseños</h1>
 
-  <a href="index.html" class="volver" id="btnVolver">Volver al inicio</a>
+  <div class="diseno" data-nombre="Uñas francesas" data-costo="300" data-duracion="60">
+    <h2>Uñas francesas</h2>
+    <p>Clásico diseño francés, elegante y sencillo.</p>
+    <p>Costo: $300 MXN</p>
+    <p>Duración: 60 minutos</p>
+    <button>Seleccionar diseño</button>
+  </div>
 
-  <div class="idioma-select">
-    <label for="idioma">🌐 Cambiar idioma:</label>
-    <select id="idioma" onchange="cambiarIdioma(this.value)">
-      <option value="es">Español latino</option>
-      <option value="en">English</option>
-    </select>
+  <div class="diseno" data-nombre="Uñas con brillo" data-costo="400" data-duracion="75">
+    <h2>Uñas con brillo</h2>
+    <p>Diseño con esmalte y detalles brillantes.</p>
+    <p>Costo: $400 MXN</p>
+    <p>Duración: 75 minutos</p>
+    <button>Seleccionar diseño</button>
+  </div>
+
+  <div class="diseno" data-nombre="Uñas artísticas" data-costo="550" data-duracion="90">
+    <h2>Uñas artísticas</h2>
+    <p>Diseños personalizados y creativos.</p>
+    <p>Costo: $550 MXN</p>
+    <p>Duración: 90 minutos</p>
+    <button>Seleccionar diseño</button>
   </div>
 
   <script>
-    const nombreCompleto = localStorage.getItem('nombreCliente') || 'Cliente';
-    const primerNombre = nombreCompleto.trim().split(' ')[0];
-    const diseño = localStorage.getItem('disenoSeleccionado') || '';
-    const fecha = localStorage.getItem('fechaSeleccionada') || '';
-    const hora = localStorage.getItem('horaSeleccionada') || '';
-    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+    const botones = document.querySelectorAll('.diseno button');
 
-    function cambiarIdioma(idioma) {
-      localStorage.setItem("idioma", idioma);
-      aplicarIdioma();
-    }
+    botones.forEach(boton => {
+      boton.addEventListener('click', () => {
+        const contenedor = boton.parentElement;
+        const nombre = contenedor.getAttribute('data-nombre');
+        const costo = contenedor.getAttribute('data-costo');
+        const duracion = contenedor.getAttribute('data-duracion');
 
-    function aplicarIdioma() {
-      const idioma = localStorage.getItem('idioma') || 'es';
+        const idioma = localStorage.getItem('idioma') || 'es';
+        const textos = {
+          es: `Has seleccionado el diseño "${nombre}".\nCosto: $${costo} MXN.\nDuración: ${duracion} minutos.`,
+          en: `You have selected the design "${nombre}".\nCost: $${costo} MXN.\nDuration: ${duracion} minutes.`
+        };
 
-      const textos = {
-        es: {
-          gracias: `¡Gracias, ${primerNombre}! Tu cita para "${diseño}" está agendada el ${fecha} a las ${hora}.`,
-          extra: "Recibirás un mensaje el día de tu cita con más detalles.",
-          dudas: "Si tienes dudas, puedes escribirnos por WhatsApp.",
-          volver: "Volver al inicio"
-        },
-        en: {
-          gracias: `Thank you, ${primerNombre}! Your appointment for "${diseño}" is scheduled on ${fecha} at ${hora}.`,
-          extra: "You will receive a message with more details on the day of your appointment.",
-          dudas: "If you have any questions, feel free to message us on WhatsApp.",
-          volver: "Return to home"
+        if (confirm(textos[idioma] + '\n\n¿Quieres ver fechas y horarios disponibles? / Do you want to see available dates and times?')) {
+          // Guardar selección
+          localStorage.setItem('disenoSeleccionado', nombre);
+          localStorage.setItem('duracion', duracion);
+
+          // Ir a agendar
+          window.location.href = 'agendar.html';
         }
-      };
-
-      const t = textos[idioma];
-
-      document.getElementById("mensajeGracias").innerText = t.gracias;
-      document.getElementById("textoExtra").innerText = t.extra;
-      document.getElementById("textoDudas").innerText = t.dudas;
-      document.getElementById("btnVolver").innerText = t.volver;
-      document.getElementById("idioma").value = idioma;
-    }
-
-    aplicarIdioma();
+      });
+    });
   </script>
 </body>
 </html>
