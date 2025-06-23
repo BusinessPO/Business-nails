@@ -3,115 +3,149 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Título - Uñas</title>
+  <title>Título</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #fff0f5;
       text-align: center;
-      padding: 60px 20px;
+      padding: 20px;
     }
-
     h1 {
-      font-size: 36px;
       color: #d36ba0;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 18px;
-      color: #444;
       margin-bottom: 30px;
     }
-
-    .btn {
-      display: block;
-      margin: 15px auto;
-      padding: 15px 25px;
+    button {
       font-size: 18px;
-      border: none;
+      padding: 15px 30px;
+      margin: 10px;
       border-radius: 12px;
-      color: white;
-      background-color: #d36ba0;
+      border: none;
       cursor: pointer;
-      width: 80%;
-      max-width: 300px;
-      text-decoration: none;
+      background-color: #d36ba0;
+      color: white;
+      transition: background-color 0.3s ease;
     }
-
-    .btn:hover {
+    button:hover {
       background-color: #b7598d;
     }
-
-    .idioma-select {
+    #seccionCancelar {
       margin-top: 20px;
+      border: 2px solid #d36ba0;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 350px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      background-color: #fff;
     }
-
-    select {
-      padding: 10px;
+    #seccionCancelar p {
       font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
+    #seccionCancelar button {
+      width: 45%;
+      margin: 5px 2%;
+    }
+    #seccionCancelar button#confirmarCancelacionIndex {
+      background-color: #b03050;
     }
   </style>
 </head>
 <body>
   <h1>Título</h1>
-  <p id="descripcion">Diseño y aplicación de uñas. Agenda tu cita con estilo.</p>
 
-  <a id="btnCatalogo" href="catalogo.html" class="btn">Ver catálogo</a>
+  <button id="btnCatalogo">Catálogo de diseños</button>
+  <button id="btnAgendar">Agendar cita</button>
+  <button id="btnCancelarCitaIndex" style="background-color:#b03050;">Cancelar mi cita</button>
 
-  <button class="btn" onclick="alertIdioma()">
-    <span id="btnAgendar">Agendar cita</span>
-  </button>
-
-  <div class="idioma-select">
-    <label for="idioma">🌐 Cambiar idioma:</label>
-    <select id="idioma" onchange="cambiarIdioma(this.value)">
-      <option value="es">Español latino</option>
-      <option value="en">English</option>
-    </select>
+  <div id="seccionCancelar">
+    <p id="detalleCitaIndex"></p>
+    <button id="confirmarCancelacionIndex">Confirmar cancelación</button>
+    <button id="cerrarCancelacionIndex">Cancelar</button>
   </div>
 
   <script>
-    function alertIdioma() {
-      const idioma = localStorage.getItem("idioma") || "es";
-      if (idioma === "es") {
-        alert("Para agendar, primero selecciona un estilo en el catálogo y luego vuelve a esta página para agendar tu cita.");
-      } else {
-        alert("To schedule, first choose a style from the catalog and then return to this page to book your appointment.");
-      }
-    }
+    const telefonoDueña = '521XXXXXXXXXX'; // Cambia aquí al número real sin signos ni espacios
 
-    function cambiarIdioma(idioma) {
-      localStorage.setItem("idioma", idioma);
-      aplicarIdioma();
-    }
+    // Botones principales
+    document.getElementById('btnCatalogo').addEventListener('click', () => {
+      window.location.href = 'catalogo.html';
+    });
 
-    function aplicarIdioma() {
-      const idioma = localStorage.getItem("idioma") || "es";
-      const textos = {
-        es: {
-          descripcion: "Diseño y aplicación de uñas. Agenda tu cita con estilo.",
-          btnCatalogo: "Ver catálogo",
-          btnAgendar: "Agendar cita"
-        },
-        en: {
-          descripcion: "Nail design and application. Book your appointment in style.",
-          btnCatalogo: "View catalog",
-          btnAgendar: "Book appointment"
-        }
+    document.getElementById('btnAgendar').addEventListener('click', () => {
+      alert('Para agendar primero selecciona en catálogo para escoger un estilo y posteriormente selecciona "agendar"');
+    });
+
+    // Cancelar cita botón y sección
+    const btnCancelar = document.getElementById('btnCancelarCitaIndex');
+    const seccionCancelar = document.getElementById('seccionCancelar');
+    const detalleCitaIndex = document.getElementById('detalleCitaIndex');
+    const confirmarCancelacionIndex = document.getElementById('confirmarCancelacionIndex');
+    const cerrarCancelacionIndex = document.getElementById('cerrarCancelacionIndex');
+
+    btnCancelar.addEventListener('click', () => {
+      const cita = {
+        fecha: localStorage.getItem('fechaSeleccionada'),
+        hora: localStorage.getItem('horaSeleccionada'),
+        nombre: localStorage.getItem('nombreCliente') || 'Cliente',
+        diseno: localStorage.getItem('disenoSeleccionado') || 'Diseño desconocido'
       };
 
-      document.getElementById("descripcion").innerText = textos[idioma].descripcion;
-      document.getElementById("btnCatalogo").innerText = textos[idioma].btnCatalogo;
-      document.getElementById("btnAgendar").innerText = textos[idioma].btnAgendar;
+      if (!cita.fecha || !cita.hora) {
+        alert('No tienes cita agendada.');
+        return;
+      }
 
-      // Cambiar selección del menú también
-      document.getElementById("idioma").value = idioma;
-    }
+      detalleCitaIndex.textContent = `Tu cita: ${cita.diseno}, ${cita.fecha} a las ${cita.hora}`;
+      seccionCancelar.style.display = 'block';
+    });
 
-    aplicarIdioma(); // Se ejecuta al cargar
+    confirmarCancelacionIndex.addEventListener('click', () => {
+      const cita = {
+        fecha: localStorage.getItem('fechaSeleccionada'),
+        hora: localStorage.getItem('horaSeleccionada'),
+        nombre: localStorage.getItem('nombreCliente') || 'Cliente',
+        diseno: localStorage.getItem('disenoSeleccionado') || 'Diseño desconocido'
+      };
+
+      const hoy = new Date();
+      const fechaCita = new Date(cita.fecha);
+      const diffDias = (fechaCita - hoy) / (1000 * 60 * 60 * 24);
+
+      if (diffDias < 2) {
+        alert('Solo puedes cancelar con al menos 2 días de anticipación.');
+        return;
+      }
+
+      let citas = JSON.parse(localStorage.getItem('citas')) || [];
+
+      citas = citas.filter(c => !(c.fecha === cita.fecha && c.hora === cita.hora && c.nombre === cita.nombre));
+
+      localStorage.setItem('citas', JSON.stringify(citas));
+
+      const mensaje = encodeURIComponent(
+        `La cita de ${cita.nombre} para ${cita.diseno} el día ${cita.fecha} a las ${cita.hora} ha sido CANCELADA.`
+      );
+      window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, '_blank');
+
+      localStorage.removeItem('fechaSeleccionada');
+      localStorage.removeItem('horaSeleccionada');
+      localStorage.removeItem('nombreCliente');
+      localStorage.removeItem('disenoSeleccionado');
+      localStorage.removeItem('duracion');
+
+      alert('Cita cancelada con éxito.');
+
+      seccionCancelar.style.display = 'none';
+
+      location.reload();
+    });
+
+    cerrarCancelacionIndex.addEventListener('click', () => {
+      seccionCancelar.style.display = 'none';
+    });
   </script>
 </body>
 </html>
