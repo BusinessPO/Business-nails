@@ -153,7 +153,47 @@
 
     // Ejecutar al cargar
     cargarFechas();
-    cargarHoras();
+    cargarHoras()
+      <script>
+  function bloquearHorasOcupadas() {
+    const citas = JSON.parse(localStorage.getItem("citas")) || [];
+    const fechaSeleccionada = document.getElementById("fecha").value;
+    const duracionNueva = parseInt(localStorage.getItem("duracion")) || 60;
+
+    // Elimina todas las opciones del selector de horas
+    const selectHora = document.getElementById("hora");
+    selectHora.innerHTML = "";
+
+    for (let h = 10; h <= 18; h++) {
+      const horaStr = h.toString().padStart(2, '0') + ":00";
+
+      let ocupada = false;
+      for (const cita of citas) {
+        if (cita.fecha === fechaSeleccionada) {
+          const horaCita = parseInt(cita.hora.split(":")[0]);
+          const duracionCita = parseInt(cita.duracion);
+
+          // Marcar como ocupada si se traslapa
+          const inicio = horaCita;
+          const fin = horaCita + Math.ceil(duracionCita / 60);
+          const nuevaFin = h + Math.ceil(duracionNueva / 60);
+          if ((h >= inicio && h < fin) || (inicio >= h && inicio < nuevaFin)) {
+            ocupada = true;
+            break;
+          }
+        }
+      }
+
+      if (!ocupada) {
+        const opcion = document.createElement("option");
+        opcion.value = horaStr;
+        opcion.textContent = horaStr;
+        selectHora.appendChild(opcion);
+      }
+    }
+  }
+</script>
+;
     aplicarIdioma();
   </script>
 </body>
