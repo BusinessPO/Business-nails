@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catálogo - Título</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #d36ba0;
+      margin-bottom: 30px;
+    }
+    .diseno {
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #ddd;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 350px;
+    }
+    .diseno img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    .diseno h2 {
+      color: #b7598d;
+      margin-bottom: 10px;
+    }
+    .diseno p {
+      margin: 5px 0;
+      color: #555;
+    }
+    .btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #d36ba0;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #b7598d;
+    }
+  </style>
+</head>
+<body>
+  <h1>Catálogo de Diseños</h1>
+
+  <div class="diseno">
+    <img src="https://via.placeholder.com/300x200?text=Diseño+Rosa" alt="Diseño Rosa">
+    <h2>Diseño Rosa Pastel</h2>
+    <p><strong>Descripción:</strong> Uñas suaves con decoración floral.</p>
+    <p><strong>Precio:</strong> $250 MXN</p>
+    <p><strong>Duración:</strong> 60 minutos</p>
+    <button class="btn" onclick="seleccionarDiseno('Diseño Rosa Pastel', 60)">Ver fechas y horarios disponibles</button>
+  </div>
+
+  <div class="diseno">
+    <img src="https://via.placeholder.com/300x200?text=Diseño+Frutal" alt="Diseño Frutal">
+    <h2>Diseño Frutal</h2>
+    <p><strong>Descripción:</strong> Colores vibrantes con frutas tropicales.</p>
+    <p><strong>Precio:</strong> $280 MXN</p>
+    <p><strong>Duración:</strong> 75 minutos</p>
+    <button class="btn" onclick="seleccionarDiseno('Diseño Frutal', 75)">Ver fechas y horarios disponibles</button>
+  </div>
+
+  <div class="diseno">
+    <img src="https://via.placeholder.com/300x200?text=Diseño+Frances" alt="Diseño Frances">
+    <h2>Diseño Francés Clásico</h2>
+    <p><strong>Descripción:</strong> Elegancia y sencillez en blanco y nude.</p>
+    <p><strong>Precio:</strong> $220 MXN</p>
+    <p><strong>Duración:</strong> 45 minutos</p>
+    <button class="btn" onclick="seleccionarDiseno('Diseño Francés Clásico', 45)">Ver fechas y horarios disponibles</button>
+  </div>
+
+  <script>
+    function seleccionarDiseno(nombre, duracion) {
+      localStorage.setItem('disenoSeleccionado', nombre);
+      localStorage.setItem('duracion', duracion);
+      if (confirm(`Has seleccionado: ${nombre}\nDuración: ${duracion} minutos\n\n¿Ver fechas y horarios disponibles?`)) {
+        window.location.href = 'agendar.html';
+      }
+    }
+  </script>
+</body>
+</html>
