@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gracias - Título</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    h1 {
+      color: #d36ba0;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .volver {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #d36ba0;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .volver:hover {
+      background-color: #b7598d;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="mensajeGracias">¡Gracias por tu cita!</h1>
+  <p>Recibirás un mensaje el día de tu cita con más detalles.</p>
+  <p>Si tienes dudas, puedes escribirnos por WhatsApp.</p>
+
+  <a href="index.html" class="volver">Volver al inicio</a>
+
+  <script>
+    const nombreCompleto = localStorage.getItem('nombreCliente') || 'Cliente';
+    const primerNombre = nombreCompleto.trim().split(' ')[0];
+    const diseño = localStorage.getItem('disenoSeleccionado');
+    const fecha = localStorage.getItem('fechaSeleccionada');
+    const hora = localStorage.getItem('horaSeleccionada');
+
+    document.getElementById('mensajeGracias').innerText =
+      `¡Gracias, ${primerNombre}! Tu cita para "${diseño}" está agendada el ${fecha} a las ${hora}.`;
+
+    // OPCIONAL: Envío de datos por WhatsApp
+    const telefonoDueña = '52xxxxxxxxxx'; // número de la dueña con clave país
+    const textoWhatsApp = `Nueva cita:\nNombre: ${nombreCompleto}\nDiseño: ${diseño}\nFecha: ${fecha}\nHora: ${hora}`;
+    const urlWhatsApp = `https://wa.me/${telefonoDueña}?text=${encodeURIComponent(textoWhatsApp)}`;
+
+    // Esto enviará automáticamente si lo deseas (activar si quieres que se abra WhatsApp)
+    // window.open(urlWhatsApp, '_blank');
+  </script>
+</body>
+</html>
