@@ -11,16 +11,19 @@
       text-align: center;
       padding: 60px 20px;
     }
+
     h1 {
       font-size: 36px;
       color: #d36ba0;
       margin-bottom: 10px;
     }
+
     p {
       font-size: 18px;
       color: #444;
       margin-bottom: 30px;
     }
+
     .btn {
       display: block;
       margin: 15px auto;
@@ -35,19 +38,80 @@
       max-width: 300px;
       text-decoration: none;
     }
+
     .btn:hover {
       background-color: #b7598d;
+    }
+
+    .idioma-select {
+      margin-top: 20px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
   <h1>Título</h1>
-  <p>Diseño y aplicación de uñas. Agenda tu cita con estilo.</p>
+  <p id="descripcion">Diseño y aplicación de uñas. Agenda tu cita con estilo.</p>
 
-  <a href="catalogo.html" class="btn">Ver catálogo</a>
+  <a id="btnCatalogo" href="catalogo.html" class="btn">Ver catálogo</a>
 
-  <button class="btn" onclick="alert('Para agendar, primero selecciona un estilo en el catálogo y luego vuelve a esta página para agendar tu cita.')">
-    Agendar cita
+  <button class="btn" onclick="alertIdioma()">
+    <span id="btnAgendar">Agendar cita</span>
   </button>
+
+  <div class="idioma-select">
+    <label for="idioma">🌐 Cambiar idioma:</label>
+    <select id="idioma" onchange="cambiarIdioma(this.value)">
+      <option value="es">Español latino</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <script>
+    function alertIdioma() {
+      const idioma = localStorage.getItem("idioma") || "es";
+      if (idioma === "es") {
+        alert("Para agendar, primero selecciona un estilo en el catálogo y luego vuelve a esta página para agendar tu cita.");
+      } else {
+        alert("To schedule, first choose a style from the catalog and then return to this page to book your appointment.");
+      }
+    }
+
+    function cambiarIdioma(idioma) {
+      localStorage.setItem("idioma", idioma);
+      aplicarIdioma();
+    }
+
+    function aplicarIdioma() {
+      const idioma = localStorage.getItem("idioma") || "es";
+      const textos = {
+        es: {
+          descripcion: "Diseño y aplicación de uñas. Agenda tu cita con estilo.",
+          btnCatalogo: "Ver catálogo",
+          btnAgendar: "Agendar cita"
+        },
+        en: {
+          descripcion: "Nail design and application. Book your appointment in style.",
+          btnCatalogo: "View catalog",
+          btnAgendar: "Book appointment"
+        }
+      };
+
+      document.getElementById("descripcion").innerText = textos[idioma].descripcion;
+      document.getElementById("btnCatalogo").innerText = textos[idioma].btnCatalogo;
+      document.getElementById("btnAgendar").innerText = textos[idioma].btnAgendar;
+
+      // Cambiar selección del menú también
+      document.getElementById("idioma").value = idioma;
+    }
+
+    aplicarIdioma(); // Se ejecuta al cargar
+  </script>
 </body>
 </html>
