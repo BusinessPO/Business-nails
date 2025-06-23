@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agendar cita - Título</title>
+  <title>Registro de cita</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -11,190 +11,169 @@
       padding: 20px;
       text-align: center;
     }
-
     h1 {
       color: #d36ba0;
       margin-bottom: 20px;
     }
-
-    label, select, button {
+    form {
+      max-width: 400px;
+      margin: auto;
+      text-align: left;
+    }
+    label {
       display: block;
-      margin: 15px auto;
-      font-size: 18px;
-      width: 80%;
-      max-width: 320px;
-      padding: 10px;
-      border-radius: 10px;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      text-align: center;
+      margin-top: 5px;
+      font-size: 16px;
     }
-
     button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
       background-color: #d36ba0;
-      color: white;
       border: none;
+      border-radius: 12px;
+      color: white;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
     button:hover {
       background-color: #b7598d;
-    }
-
-    .idioma-select {
-      margin-top: 20px;
-    }
-
-    select#idioma {
-      font-size: 16px;
-      padding: 8px;
     }
   </style>
 </head>
 <body>
-  <h1 id="titulo">Agenda tu cita</h1>
+  <h1 id="titulo">Formulario de registro</h1>
+  <form id="formRegistro">
+    <label for="nombre" id="labelNombre">Nombre:</label>
+    <input type="text" id="nombre" required />
 
-  <form id="agendarForm" onsubmit="return enviarDatos()">
-    <label for="fecha" id="labelFecha">Selecciona la fecha (próximas 2 semanas):</label>
-    <select id="fecha" name="fecha" required></select>
+    <label for="apellido" id="labelApellido">Apellido:</label>
+    <input type="text" id="apellido" required />
 
-    <label for="hora" id="labelHora">Selecciona la hora:</label>
-    <select id="hora" name="hora" required></select>
+    <label for="metodoPago" id="labelPago">Método de pago:</label>
+    <select id="metodoPago" required>
+      <option value="" disabled selected>Selecciona método de pago</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Tarjeta">Tarjeta</option>
+      <option value="Transferencia">Transferencia</option>
+      <option value="Otro">Otro</option>
+    </select>
 
-    <button type="submit" id="btnSiguiente">Siguiente</button>
+    <button type="submit" id="btnConfirmar">Confirmar cita</button>
   </form>
 
-  <div class="idioma-select">
-    <label for="idioma">🌐 Cambiar idioma:</label>
-    <select id="idioma" onchange="cambiarIdioma(this.value)">
-      <option value="es">Español latino</option>
-      <option value="en">English</option>
-    </select>
-  </div>
-
   <script>
-    // Cargar fechas de los próximos 14 días
-    function cargarFechas() {
-      const selectFecha = document.getElementById('fecha');
-      const hoy = new Date();
-      for (let i = 0; i < 14; i++) {
-        const dia = new Date(hoy);
-        dia.setDate(hoy.getDate() + i);
-        const opcion = document.createElement('option');
-        opcion.value = dia.toISOString().slice(0,10);
-        opcion.textContent = dia.toLocaleDateString('es-MX', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'short'
-        });
-        selectFecha.appendChild(opcion);
-      }
-    }
-
-    // Cargar horas de 10:00 a 18:00
-    function cargarHoras() {
-      const selectHora = document.getElementById('hora');
-      for (let h = 10; h <= 18; h++) {
-        const opcion = document.createElement('option');
-        let horaStr = h.toString().padStart(2, '0') + ':00';
-        opcion.value = horaStr;
-        opcion.textContent = horaStr;
-        selectHora.appendChild(opcion);
-      }
-    }
-
-    function enviarDatos() {
-      const fecha = document.getElementById('fecha').value;
-      const hora = document.getElementById('hora').value;
-
-      if (!fecha || !hora) {
-        const idioma = localStorage.getItem('idioma') || 'es';
-        alert(idioma === 'en'
-          ? 'Please select a date and time.'
-          : 'Por favor selecciona fecha y hora');
-        return false;
-      }
-
-      localStorage.setItem('fechaSeleccionada', fecha);
-      localStorage.setItem('horaSeleccionada', hora);
-      window.location.href = 'registro.html';
-      return false;
-    }
-
-    // Traducciones
-    function cambiarIdioma(idioma) {
-      localStorage.setItem('idioma', idioma);
-      aplicarIdioma();
-    }
+    const telefonoDueña = '521XXXXXXXXXX'; // Cambia al número real
 
     function aplicarIdioma() {
       const idioma = localStorage.getItem('idioma') || 'es';
       const textos = {
         es: {
-          titulo: 'Agenda tu cita',
-          labelFecha: 'Selecciona la fecha (próximas 2 semanas):',
-          labelHora: 'Selecciona la hora:',
-          btnSiguiente: 'Siguiente'
+          titulo: 'Formulario de registro',
+          labelNombre: 'Nombre:',
+          labelApellido: 'Apellido:',
+          labelPago: 'Método de pago:',
+          btnConfirmar: 'Confirmar cita',
+          mensajeError: 'Completa todos los campos obligatorios.'
         },
         en: {
-          titulo: 'Book your appointment',
-          labelFecha: 'Select a date (next 2 weeks):',
-          labelHora: 'Select a time:',
-          btnSiguiente: 'Next'
+          titulo: 'Registration form',
+          labelNombre: 'First Name:',
+          labelApellido: 'Last Name:',
+          labelPago: 'Payment method:',
+          btnConfirmar: 'Confirm appointment',
+          mensajeError: 'Please fill in all required fields.'
         }
       };
-
       const t = textos[idioma];
+
       document.getElementById('titulo').innerText = t.titulo;
-      document.getElementById('labelFecha').innerText = t.labelFecha;
-      document.getElementById('labelHora').innerText = t.labelHora;
-      document.getElementById('btnSiguiente').innerText = t.btnSiguiente;
-      document.getElementById('idioma').value = idioma;
+      document.getElementById('labelNombre').innerText = t.labelNombre;
+      document.getElementById('labelApellido').innerText = t.labelApellido;
+      document.getElementById('labelPago').innerText = t.labelPago;
+      document.getElementById('btnConfirmar').innerText = t.btnConfirmar;
     }
 
-    // Ejecutar al cargar
-    cargarFechas();
-    cargarHoras()
-      <script>
-  function bloquearHorasOcupadas() {
-    const citas = JSON.parse(localStorage.getItem("citas")) || [];
-    const fechaSeleccionada = document.getElementById("fecha").value;
-    const duracionNueva = parseInt(localStorage.getItem("duracion")) || 60;
+    document.getElementById('formRegistro').addEventListener('submit', (e) => {
+      e.preventDefault();
 
-    // Elimina todas las opciones del selector de horas
-    const selectHora = document.getElementById("hora");
-    selectHora.innerHTML = "";
+      const nombre = document.getElementById('nombre').value.trim();
+      const apellido = document.getElementById('apellido').value.trim();
+      const pago = document.getElementById('metodoPago').value;
+      const idioma = localStorage.getItem('idioma') || 'es';
 
-    for (let h = 10; h <= 18; h++) {
-      const horaStr = h.toString().padStart(2, '0') + ":00";
+      const textosError = {
+        es: 'Completa todos los campos obligatorios.',
+        en: 'Please fill in all required fields.'
+      };
 
-      let ocupada = false;
-      for (const cita of citas) {
-        if (cita.fecha === fechaSeleccionada) {
-          const horaCita = parseInt(cita.hora.split(":")[0]);
-          const duracionCita = parseInt(cita.duracion);
-
-          // Marcar como ocupada si se traslapa
-          const inicio = horaCita;
-          const fin = horaCita + Math.ceil(duracionCita / 60);
-          const nuevaFin = h + Math.ceil(duracionNueva / 60);
-          if ((h >= inicio && h < fin) || (inicio >= h && inicio < nuevaFin)) {
-            ocupada = true;
-            break;
-          }
-        }
+      if (!nombre || !apellido || !pago) {
+        alert(textosError[idioma]);
+        return;
       }
 
-      if (!ocupada) {
-        const opcion = document.createElement("option");
-        opcion.value = horaStr;
-        opcion.textContent = horaStr;
-        selectHora.appendChild(opcion);
+      const fecha = localStorage.getItem('fechaSeleccionada');
+      const hora = localStorage.getItem('horaSeleccionada');
+      const diseno = localStorage.getItem('disenoSeleccionado') || 'Diseño desconocido';
+      const duracion = localStorage.getItem('duracion') || '60';
+
+      if (!fecha || !hora) {
+        alert('Error: falta fecha u hora seleccionada.');
+        return;
       }
-    }
-  }
-</script>
-;
-    aplicarIdioma();
+
+      // Guardar cita en localStorage
+      let citas = JSON.parse(localStorage.getItem('citas')) || [];
+
+      // Verificar que no exista ya la cita para ese horario
+      const existe = citas.some(c => c.fecha === fecha && c.hora === hora);
+
+      if (existe) {
+        alert(idioma === 'es' ? 'El horario seleccionado ya está ocupado.' : 'Selected time is already taken.');
+        return;
+      }
+
+      const cita = {
+        fecha,
+        hora,
+        nombre: nombre + ' ' + apellido,
+        pago,
+        diseno,
+        duracion
+      };
+
+      citas.push(cita);
+      localStorage.setItem('citas', JSON.stringify(citas));
+
+      // Guardar nombre para permitir cancelar después
+      localStorage.setItem('nombreCliente', nombre + ' ' + apellido);
+
+      // Enviar WhatsApp a la dueña
+      const mensaje = encodeURIComponent(
+        `Nueva cita de ${cita.nombre} para ${cita.diseno} el día ${cita.fecha} a las ${cita.hora}. Método de pago: ${cita.pago}.`
+      );
+      window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, '_blank');
+
+      // Redirigir a página de agradecimiento con nombre para personalizar
+      window.location.href = `agradecimiento.html?nombre=${encodeURIComponent(nombre)}`;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('idioma')) {
+        localStorage.setItem('idioma', 'es');
+      }
+      aplicarIdioma();
+    });
   </script>
 </body>
 </html>
