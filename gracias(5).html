@@ -39,32 +39,75 @@
     .volver:hover {
       background-color: #b7598d;
     }
+
+    .idioma-select {
+      margin-top: 30px;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
   <h1 id="mensajeGracias">¡Gracias por tu cita!</h1>
-  <p>Recibirás un mensaje el día de tu cita con más detalles.</p>
-  <p>Si tienes dudas, puedes escribirnos por WhatsApp.</p>
+  <p id="textoExtra">Recibirás un mensaje el día de tu cita con más detalles.</p>
+  <p id="textoDudas">Si tienes dudas, puedes escribirnos por WhatsApp.</p>
 
-  <a href="index.html" class="volver">Volver al inicio</a>
+  <a href="index.html" class="volver" id="btnVolver">Volver al inicio</a>
+
+  <div class="idioma-select">
+    <label for="idioma">🌐 Cambiar idioma:</label>
+    <select id="idioma" onchange="cambiarIdioma(this.value)">
+      <option value="es">Español latino</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
   <script>
     const nombreCompleto = localStorage.getItem('nombreCliente') || 'Cliente';
     const primerNombre = nombreCompleto.trim().split(' ')[0];
-    const diseño = localStorage.getItem('disenoSeleccionado');
-    const fecha = localStorage.getItem('fechaSeleccionada');
-    const hora = localStorage.getItem('horaSeleccionada');
+    const diseño = localStorage.getItem('disenoSeleccionado') || '';
+    const fecha = localStorage.getItem('fechaSeleccionada') || '';
+    const hora = localStorage.getItem('horaSeleccionada') || '';
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
 
-    document.getElementById('mensajeGracias').innerText =
-      `¡Gracias, ${primerNombre}! Tu cita para "${diseño}" está agendada el ${fecha} a las ${hora}.`;
+    function cambiarIdioma(idioma) {
+      localStorage.setItem("idioma", idioma);
+      aplicarIdioma();
+    }
 
-    // OPCIONAL: Envío de datos por WhatsApp
-    const telefonoDueña = '52xxxxxxxxxx'; // número de la dueña con clave país
-    const textoWhatsApp = `Nueva cita:\nNombre: ${nombreCompleto}\nDiseño: ${diseño}\nFecha: ${fecha}\nHora: ${hora}`;
-    const urlWhatsApp = `https://wa.me/${telefonoDueña}?text=${encodeURIComponent(textoWhatsApp)}`;
+    function aplicarIdioma() {
+      const idioma = localStorage.getItem('idioma') || 'es';
 
-    // Esto enviará automáticamente si lo deseas (activar si quieres que se abra WhatsApp)
-    // window.open(urlWhatsApp, '_blank');
+      const textos = {
+        es: {
+          gracias: `¡Gracias, ${primerNombre}! Tu cita para "${diseño}" está agendada el ${fecha} a las ${hora}.`,
+          extra: "Recibirás un mensaje el día de tu cita con más detalles.",
+          dudas: "Si tienes dudas, puedes escribirnos por WhatsApp.",
+          volver: "Volver al inicio"
+        },
+        en: {
+          gracias: `Thank you, ${primerNombre}! Your appointment for "${diseño}" is scheduled on ${fecha} at ${hora}.`,
+          extra: "You will receive a message with more details on the day of your appointment.",
+          dudas: "If you have any questions, feel free to message us on WhatsApp.",
+          volver: "Return to home"
+        }
+      };
+
+      const t = textos[idioma];
+
+      document.getElementById("mensajeGracias").innerText = t.gracias;
+      document.getElementById("textoExtra").innerText = t.extra;
+      document.getElementById("textoDudas").innerText = t.dudas;
+      document.getElementById("btnVolver").innerText = t.volver;
+      document.getElementById("idioma").value = idioma;
+    }
+
+    aplicarIdioma();
   </script>
 </body>
 </html>
