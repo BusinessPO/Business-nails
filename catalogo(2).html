@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catálogo - Título</title>
+  <title>Título - Catálogo</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -11,10 +11,12 @@
       padding: 20px;
       text-align: center;
     }
+
     h1 {
       color: #d36ba0;
       margin-bottom: 30px;
     }
+
     .diseno {
       background-color: white;
       border-radius: 15px;
@@ -23,19 +25,23 @@
       padding: 20px;
       max-width: 350px;
     }
+
     .diseno img {
       width: 100%;
       border-radius: 10px;
       margin-bottom: 15px;
     }
+
     .diseno h2 {
       color: #b7598d;
       margin-bottom: 10px;
     }
+
     .diseno p {
       margin: 5px 0;
       color: #555;
     }
+
     .btn {
       margin-top: 15px;
       padding: 10px 20px;
@@ -45,49 +51,141 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
     .btn:hover {
       background-color: #b7598d;
+    }
+
+    .idioma-select {
+      margin-top: 20px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
-  <h1>Catálogo de Diseños</h1>
+  <h1>Título</h1>
+  <h2 id="subtitulo">Catálogo de Diseños</h2>
 
   <div class="diseno">
-    <img src="https://via.placeholder.com/300x200?text=Diseño+Rosa" alt="Diseño Rosa">
-    <h2>Diseño Rosa Pastel</h2>
-    <p><strong>Descripción:</strong> Uñas suaves con decoración floral.</p>
-    <p><strong>Precio:</strong> $250 MXN</p>
-    <p><strong>Duración:</strong> 60 minutos</p>
-    <button class="btn" onclick="seleccionarDiseno('Diseño Rosa Pastel', 60)">Ver fechas y horarios disponibles</button>
+    <img src="https://via.placeholder.com/300x200?text=Rosa" alt="Diseño Rosa" />
+    <h2 id="nombre1">Diseño Rosa Pastel</h2>
+    <p><strong id="desc1Label">Descripción:</strong> <span id="desc1">Uñas suaves con decoración floral.</span></p>
+    <p><strong id="precio1Label">Precio:</strong> <span id="precio1">$250 MXN</span></p>
+    <p><strong id="duracion1Label">Duración:</strong> <span id="duracion1">60 minutos</span></p>
+    <button class="btn" onclick="seleccionarDiseno('Diseño Rosa Pastel', 60)" id="btn1">Ver fechas y horarios disponibles</button>
   </div>
 
   <div class="diseno">
-    <img src="https://via.placeholder.com/300x200?text=Diseño+Frutal" alt="Diseño Frutal">
-    <h2>Diseño Frutal</h2>
-    <p><strong>Descripción:</strong> Colores vibrantes con frutas tropicales.</p>
-    <p><strong>Precio:</strong> $280 MXN</p>
-    <p><strong>Duración:</strong> 75 minutos</p>
-    <button class="btn" onclick="seleccionarDiseno('Diseño Frutal', 75)">Ver fechas y horarios disponibles</button>
+    <img src="https://via.placeholder.com/300x200?text=Frutal" alt="Diseño Frutal" />
+    <h2 id="nombre2">Diseño Frutal</h2>
+    <p><strong id="desc2Label">Descripción:</strong> <span id="desc2">Colores vibrantes con frutas tropicales.</span></p>
+    <p><strong id="precio2Label">Precio:</strong> <span id="precio2">$280 MXN</span></p>
+    <p><strong id="duracion2Label">Duración:</strong> <span id="duracion2">75 minutos</span></p>
+    <button class="btn" onclick="seleccionarDiseno('Diseño Frutal', 75)" id="btn2">Ver fechas y horarios disponibles</button>
   </div>
 
   <div class="diseno">
-    <img src="https://via.placeholder.com/300x200?text=Diseño+Frances" alt="Diseño Frances">
-    <h2>Diseño Francés Clásico</h2>
-    <p><strong>Descripción:</strong> Elegancia y sencillez en blanco y nude.</p>
-    <p><strong>Precio:</strong> $220 MXN</p>
-    <p><strong>Duración:</strong> 45 minutos</p>
-    <button class="btn" onclick="seleccionarDiseno('Diseño Francés Clásico', 45)">Ver fechas y horarios disponibles</button>
+    <img src="https://via.placeholder.com/300x200?text=Frances" alt="Diseño Francés" />
+    <h2 id="nombre3">Diseño Francés Clásico</h2>
+    <p><strong id="desc3Label">Descripción:</strong> <span id="desc3">Elegancia y sencillez en blanco y nude.</span></p>
+    <p><strong id="precio3Label">Precio:</strong> <span id="precio3">$220 MXN</span></p>
+    <p><strong id="duracion3Label">Duración:</strong> <span id="duracion3">45 minutos</span></p>
+    <button class="btn" onclick="seleccionarDiseno('Diseño Francés Clásico', 45)" id="btn3">Ver fechas y horarios disponibles</button>
+  </div>
+
+  <div class="idioma-select">
+    <label for="idioma">🌐 Cambiar idioma:</label>
+    <select id="idioma" onchange="cambiarIdioma(this.value)">
+      <option value="es">Español latino</option>
+      <option value="en">English</option>
+    </select>
   </div>
 
   <script>
     function seleccionarDiseno(nombre, duracion) {
-      localStorage.setItem('disenoSeleccionado', nombre);
-      localStorage.setItem('duracion', duracion);
-      if (confirm(`Has seleccionado: ${nombre}\nDuración: ${duracion} minutos\n\n¿Ver fechas y horarios disponibles?`)) {
-        window.location.href = 'agendar.html';
+      localStorage.setItem("disenoSeleccionado", nombre);
+      localStorage.setItem("duracion", duracion);
+      const idioma = localStorage.getItem("idioma") || "es";
+      const confirmMsg = idioma === "en"
+        ? `You selected: ${nombre}\nDuration: ${duracion} minutes\n\nView available dates and times?`
+        : `Has seleccionado: ${nombre}\nDuración: ${duracion} minutos\n\n¿Ver fechas y horarios disponibles?`;
+
+      if (confirm(confirmMsg)) {
+        window.location.href = "agendar.html";
       }
     }
+
+    function cambiarIdioma(idioma) {
+      localStorage.setItem("idioma", idioma);
+      aplicarIdioma();
+    }
+
+    function aplicarIdioma() {
+      const idioma = localStorage.getItem("idioma") || "es";
+      const textos = {
+        es: {
+          subtitulo: "Catálogo de Diseños",
+          nombre1: "Diseño Rosa Pastel",
+          desc1: "Uñas suaves con decoración floral.",
+          precio1: "$250 MXN",
+          duracion1: "60 minutos",
+          btn1: "Ver fechas y horarios disponibles",
+
+          nombre2: "Diseño Frutal",
+          desc2: "Colores vibrantes con frutas tropicales.",
+          precio2: "$280 MXN",
+          duracion2: "75 minutos",
+          btn2: "Ver fechas y horarios disponibles",
+
+          nombre3: "Diseño Francés Clásico",
+          desc3: "Elegancia y sencillez en blanco y nude.",
+          precio3: "$220 MXN",
+          duracion3: "45 minutos",
+          btn3: "Ver fechas y horarios disponibles"
+        },
+        en: {
+          subtitulo: "Design Catalog",
+          nombre1: "Pastel Pink Design",
+          desc1: "Soft nails with floral decoration.",
+          precio1: "$250 MXN",
+          duracion1: "60 minutes",
+          btn1: "View available dates and times",
+
+          nombre2: "Fruity Design",
+          desc2: "Vibrant colors with tropical fruits.",
+          precio2: "$280 MXN",
+          duracion2: "75 minutes",
+          btn2: "View available dates and times",
+
+          nombre3: "Classic French Design",
+          desc3: "Elegance and simplicity in white and nude.",
+          precio3: "$220 MXN",
+          duracion3: "45 minutes",
+          btn3: "View available dates and times"
+        }
+      };
+
+      const t = textos[idioma];
+      document.getElementById("subtitulo").innerText = t.subtitulo;
+
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById("nombre" + i).innerText = t["nombre" + i];
+        document.getElementById("desc" + i).innerText = t["desc" + i];
+        document.getElementById("precio" + i).innerText = t["precio" + i];
+        document.getElementById("duracion" + i).innerText = t["duracion" + i];
+        document.getElementById("btn" + i).innerText = t["btn" + i];
+      }
+
+      document.getElementById("idioma").value = idioma;
+    }
+
+    aplicarIdioma();
   </script>
 </body>
 </html>
