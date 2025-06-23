@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Título - Catálogo</title>
+  <title>Agendar cita - Título</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -11,181 +11,252 @@
       padding: 20px;
       text-align: center;
     }
-
     h1 {
       color: #d36ba0;
-      margin-bottom: 30px;
-    }
-
-    .diseno {
-      background-color: white;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #ddd;
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 350px;
-    }
-
-    .diseno img {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 15px;
-    }
-
-    .diseno h2 {
-      color: #b7598d;
       margin-bottom: 10px;
     }
-
-    .diseno p {
-      margin: 5px 0;
-      color: #555;
+    #infoDiseno {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #444;
     }
-
-    .btn {
-      margin-top: 15px;
-      padding: 10px 20px;
+    select, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px auto;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 300px;
+      display: block;
+    }
+    select#hora option {
+      color: green;
+    }
+    select#hora option:disabled {
+      color: gray;
+      background-color: #eee;
+    }
+    button {
       background-color: #d36ba0;
       color: white;
       border: none;
-      border-radius: 10px;
       cursor: pointer;
     }
-
-    .btn:hover {
+    button:hover {
       background-color: #b7598d;
     }
-
     .idioma-select {
       margin-top: 20px;
-    }
-
-    select {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
-  <h1>Título</h1>
-  <h2 id="subtitulo">Catálogo de Diseños</h2>
+  <h1 id="titulo">Agendar cita</h1>
 
-  <div class="diseno">
-    <img src="https://via.placeholder.com/300x200?text=Rosa" alt="Diseño Rosa" />
-    <h2 id="nombre1">Diseño Rosa Pastel</h2>
-    <p><strong id="desc1Label">Descripción:</strong> <span id="desc1">Uñas suaves con decoración floral.</span></p>
-    <p><strong id="precio1Label">Precio:</strong> <span id="precio1">$250 MXN</span></p>
-    <p><strong id="duracion1Label">Duración:</strong> <span id="duracion1">60 minutos</span></p>
-    <button class="btn" onclick="seleccionarDiseno('Diseño Rosa Pastel', 60)" id="btn1">Ver fechas y horarios disponibles</button>
-  </div>
+  <div id="infoDiseno">Cargando diseño seleccionado...</div>
 
-  <div class="diseno">
-    <img src="https://via.placeholder.com/300x200?text=Frutal" alt="Diseño Frutal" />
-    <h2 id="nombre2">Diseño Frutal</h2>
-    <p><strong id="desc2Label">Descripción:</strong> <span id="desc2">Colores vibrantes con frutas tropicales.</span></p>
-    <p><strong id="precio2Label">Precio:</strong> <span id="precio2">$280 MXN</span></p>
-    <p><strong id="duracion2Label">Duración:</strong> <span id="duracion2">75 minutos</span></p>
-    <button class="btn" onclick="seleccionarDiseno('Diseño Frutal', 75)" id="btn2">Ver fechas y horarios disponibles</button>
-  </div>
+  <label for="fecha" id="labelFecha">Selecciona fecha:</label>
+  <select id="fecha"></select>
 
-  <div class="diseno">
-    <img src="https://via.placeholder.com/300x200?text=Frances" alt="Diseño Francés" />
-    <h2 id="nombre3">Diseño Francés Clásico</h2>
-    <p><strong id="desc3Label">Descripción:</strong> <span id="desc3">Elegancia y sencillez en blanco y nude.</span></p>
-    <p><strong id="precio3Label">Precio:</strong> <span id="precio3">$220 MXN</span></p>
-    <p><strong id="duracion3Label">Duración:</strong> <span id="duracion3">45 minutos</span></p>
-    <button class="btn" onclick="seleccionarDiseno('Diseño Francés Clásico', 45)" id="btn3">Ver fechas y horarios disponibles</button>
-  </div>
+  <label for="hora" id="labelHora">Selecciona hora:</label>
+  <select id="hora"></select>
+
+  <button id="btnRegistrar">Registrar cita</button>
 
   <div class="idioma-select">
     <label for="idioma">🌐 Cambiar idioma:</label>
-    <select id="idioma" onchange="cambiarIdioma(this.value)">
+    <select id="idioma">
       <option value="es">Español latino</option>
       <option value="en">English</option>
     </select>
   </div>
 
   <script>
-    function seleccionarDiseno(nombre, duracion) {
-      localStorage.setItem("disenoSeleccionado", nombre);
-      localStorage.setItem("duracion", duracion);
-      const idioma = localStorage.getItem("idioma") || "es";
-      const confirmMsg = idioma === "en"
-        ? `You selected: ${nombre}\nDuration: ${duracion} minutes\n\nView available dates and times?`
-        : `Has seleccionado: ${nombre}\nDuración: ${duracion} minutos\n\n¿Ver fechas y horarios disponibles?`;
+    // Mostrar diseño y duración
+    function mostrarDiseno() {
+      const diseno = localStorage.getItem('disenoSeleccionado') || 'Sin diseño';
+      const duracion = localStorage.getItem('duracion') || '60';
+      const idioma = localStorage.getItem('idioma') || 'es';
 
-      if (confirm(confirmMsg)) {
-        window.location.href = "agendar.html";
+      const textos = {
+        es: `Diseño: ${diseno} (Duración: ${duracion} minutos)`,
+        en: `Design: ${diseno} (Duration: ${duracion} minutes)`
+      };
+      document.getElementById('infoDiseno').innerText = textos[idioma];
+    }
+
+    // Cargar fechas próximas 14 días
+    function cargarFechas() {
+      const selectFecha = document.getElementById('fecha');
+      const hoy = new Date();
+      selectFecha.innerHTML = '';
+      for (let i = 0; i < 14; i++) {
+        const dia = new Date(hoy);
+        dia.setDate(hoy.getDate() + i);
+        const opcion = document.createElement('option');
+        opcion.value = dia.toISOString().slice(0,10);
+        opcion.textContent = dia.toLocaleDateString('es-MX', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'short'
+        });
+        selectFecha.appendChild(opcion);
+      }
+      selectFecha.value = new Date().toISOString().slice(0,10);
+    }
+
+    // Cargar horas de 10 a 18
+    function cargarHoras() {
+      const selectHora = document.getElementById('hora');
+      selectHora.innerHTML = '';
+      for (let h = 10; h <= 18; h++) {
+        const horaStr = h.toString().padStart(2,'0') + ':00';
+        const opcion = document.createElement('option');
+        opcion.value = horaStr;
+        opcion.textContent = horaStr;
+        selectHora.appendChild(opcion);
       }
     }
 
-    function cambiarIdioma(idioma) {
-      localStorage.setItem("idioma", idioma);
-      aplicarIdioma();
+    // Bloquear horas ocupadas y mostrar en gris
+    function bloquearHorasOcupadas() {
+      const citas = JSON.parse(localStorage.getItem("citas")) || [];
+      const fechaSeleccionada = document.getElementById("fecha").value;
+      const duracionNueva = parseInt(localStorage.getItem("duracion")) || 60;
+
+      const selectHora = document.getElementById("hora");
+      selectHora.innerHTML = "";
+
+      for (let h = 10; h <= 18; h++) {
+        const horaStr = h.toString().padStart(2, '0') + ":00";
+
+        let ocupada = false;
+
+        for (const cita of citas) {
+          if (cita.fecha === fechaSeleccionada) {
+            const horaCita = parseInt(cita.hora.split(":")[0]);
+            const duracionCita = parseInt(cita.duracion);
+
+            const inicio = horaCita;
+            const fin = horaCita + Math.ceil(duracionCita / 60);
+            const nuevaFin = h + Math.ceil(duracionNueva / 60);
+
+            if ((h >= inicio && h < fin) || (inicio >= h && inicio < nuevaFin)) {
+              ocupada = true;
+              break;
+            }
+          }
+        }
+
+        const opcion = document.createElement("option");
+        opcion.value = horaStr;
+        opcion.textContent = horaStr;
+
+        if (ocupada) {
+          opcion.disabled = true;
+          opcion.style.color = "gray";
+          opcion.style.backgroundColor = "#eee";
+        } else {
+          opcion.style.color = "green";
+        }
+
+        selectHora.appendChild(opcion);
+      }
     }
 
+    // Cambiar idioma dinámicamente
     function aplicarIdioma() {
-      const idioma = localStorage.getItem("idioma") || "es";
+      const idioma = localStorage.getItem('idioma') || 'es';
+
       const textos = {
         es: {
-          subtitulo: "Catálogo de Diseños",
-          nombre1: "Diseño Rosa Pastel",
-          desc1: "Uñas suaves con decoración floral.",
-          precio1: "$250 MXN",
-          duracion1: "60 minutos",
-          btn1: "Ver fechas y horarios disponibles",
-
-          nombre2: "Diseño Frutal",
-          desc2: "Colores vibrantes con frutas tropicales.",
-          precio2: "$280 MXN",
-          duracion2: "75 minutos",
-          btn2: "Ver fechas y horarios disponibles",
-
-          nombre3: "Diseño Francés Clásico",
-          desc3: "Elegancia y sencillez en blanco y nude.",
-          precio3: "$220 MXN",
-          duracion3: "45 minutos",
-          btn3: "Ver fechas y horarios disponibles"
+          titulo: 'Agendar cita',
+          labelFecha: 'Selecciona fecha:',
+          labelHora: 'Selecciona hora:',
+          btnRegistrar: 'Registrar cita',
+          avisoSeleccion: 'Por favor selecciona fecha y hora.',
+          registroExito: 'Cita registrada con éxito.',
+          alertaNombre: 'Por favor ingresa tu nombre y apellido.',
+          formularioTitulo: 'Formulario de registro',
+          campoNombre: 'Nombre',
+          campoApellido: 'Apellido',
+          campoPago: 'Método de pago',
+          btnConfirmar: 'Confirmar cita',
+          mensajeError: 'Completa todos los campos obligatorios.'
         },
         en: {
-          subtitulo: "Design Catalog",
-          nombre1: "Pastel Pink Design",
-          desc1: "Soft nails with floral decoration.",
-          precio1: "$250 MXN",
-          duracion1: "60 minutes",
-          btn1: "View available dates and times",
-
-          nombre2: "Fruity Design",
-          desc2: "Vibrant colors with tropical fruits.",
-          precio2: "$280 MXN",
-          duracion2: "75 minutes",
-          btn2: "View available dates and times",
-
-          nombre3: "Classic French Design",
-          desc3: "Elegance and simplicity in white and nude.",
-          precio3: "$220 MXN",
-          duracion3: "45 minutes",
-          btn3: "View available dates and times"
+          titulo: 'Schedule Appointment',
+          labelFecha: 'Select date:',
+          labelHora: 'Select time:',
+          btnRegistrar: 'Register appointment',
+          avisoSeleccion: 'Please select date and time.',
+          registroExito: 'Appointment successfully registered.',
+          alertaNombre: 'Please enter your first and last name.',
+          formularioTitulo: 'Registration form',
+          campoNombre: 'First Name',
+          campoApellido: 'Last Name',
+          campoPago: 'Payment method',
+          btnConfirmar: 'Confirm appointment',
+          mensajeError: 'Please fill in all required fields.'
         }
       };
 
       const t = textos[idioma];
-      document.getElementById("subtitulo").innerText = t.subtitulo;
 
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById("nombre" + i).innerText = t["nombre" + i];
-        document.getElementById("desc" + i).innerText = t["desc" + i];
-        document.getElementById("precio" + i).innerText = t["precio" + i];
-        document.getElementById("duracion" + i).innerText = t["duracion" + i];
-        document.getElementById("btn" + i).innerText = t["btn" + i];
-      }
-
-      document.getElementById("idioma").value = idioma;
+      document.getElementById('titulo').innerText = t.titulo;
+      document.getElementById('labelFecha').innerText = t.labelFecha;
+      document.getElementById('labelHora').innerText = t.labelHora;
+      document.getElementById('btnRegistrar').innerText = t.btnRegistrar;
     }
 
-    aplicarIdioma();
+    // Guardar idioma cuando cambia selector
+    document.getElementById('idioma').addEventListener('change', (e) => {
+      localStorage.setItem('idioma', e.target.value);
+      aplicarIdioma();
+      mostrarDiseno();
+    });
+
+    // Registrar cita (pasa a formulario)
+    document.getElementById('btnRegistrar').addEventListener('click', () => {
+      const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
+      const idioma = localStorage.getItem('idioma') || 'es';
+
+      const textos = {
+        es: 'Por favor selecciona fecha y hora.',
+        en: 'Please select date and time.'
+      };
+
+      if (!fecha || !hora) {
+        alert(textos[idioma]);
+        return;
+      }
+
+      // Guardamos fecha y hora seleccionadas para usar en el formulario
+      localStorage.setItem('fechaSeleccionada', fecha);
+      localStorage.setItem('horaSeleccionada', hora);
+
+      // Ir al formulario de registro (registro.html)
+      window.location.href = 'registro.html';
+    });
+
+    // Cuando cambia la fecha, actualizar horarios
+    document.getElementById('fecha').addEventListener('change', bloquearHorasOcupadas);
+
+    // Inicializar todo
+    function init() {
+      if (!localStorage.getItem('idioma')) {
+        localStorage.setItem('idioma', 'es');
+      }
+      aplicarIdioma();
+      mostrarDiseno();
+      cargarFechas();
+      cargarHoras();
+      bloquearHorasOcupadas();
+    }
+
+    init();
   </script>
 </body>
 </html>
