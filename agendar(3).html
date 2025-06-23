@@ -11,10 +11,12 @@
       padding: 20px;
       text-align: center;
     }
+
     h1 {
       color: #d36ba0;
       margin-bottom: 20px;
     }
+
     label, select, button {
       display: block;
       margin: 15px auto;
@@ -26,31 +28,48 @@
       border: 1px solid #ccc;
       text-align: center;
     }
+
     button {
       background-color: #d36ba0;
       color: white;
       border: none;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #b7598d;
+    }
+
+    .idioma-select {
+      margin-top: 20px;
+    }
+
+    select#idioma {
+      font-size: 16px;
+      padding: 8px;
     }
   </style>
 </head>
 <body>
-  <h1>Agenda tu cita</h1>
+  <h1 id="titulo">Agenda tu cita</h1>
 
   <form id="agendarForm" onsubmit="return enviarDatos()">
-    <label for="fecha">Selecciona la fecha (próximas 2 semanas):</label>
+    <label for="fecha" id="labelFecha">Selecciona la fecha (próximas 2 semanas):</label>
     <select id="fecha" name="fecha" required></select>
 
-    <label for="hora">Selecciona la hora:</label>
-    <select id="hora" name="hora" required>
-      <!-- Horarios de 10 a 18 h -->
-    </select>
+    <label for="hora" id="labelHora">Selecciona la hora:</label>
+    <select id="hora" name="hora" required></select>
 
-    <button type="submit">Siguiente</button>
+    <button type="submit" id="btnSiguiente">Siguiente</button>
   </form>
+
+  <div class="idioma-select">
+    <label for="idioma">🌐 Cambiar idioma:</label>
+    <select id="idioma" onchange="cambiarIdioma(this.value)">
+      <option value="es">Español latino</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
   <script>
     // Cargar fechas de los próximos 14 días
@@ -62,19 +81,23 @@
         dia.setDate(hoy.getDate() + i);
         const opcion = document.createElement('option');
         opcion.value = dia.toISOString().slice(0,10);
-        opcion.textContent = dia.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'short' });
+        opcion.textContent = dia.toLocaleDateString('es-MX', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'short'
+        });
         selectFecha.appendChild(opcion);
       }
     }
 
-    // Cargar horarios
+    // Cargar horas de 10:00 a 18:00
     function cargarHoras() {
       const selectHora = document.getElementById('hora');
-      for(let h=10; h <= 18; h++){
+      for (let h = 10; h <= 18; h++) {
         const opcion = document.createElement('option');
-        let horaStr = h.toString().padStart(2,'0') + ':00';
+        let horaStr = h.toString().padStart(2, '0') + ':00';
         opcion.value = horaStr;
-        opcion.textContent = h + ':00';
+        opcion.textContent = horaStr;
         selectHora.appendChild(opcion);
       }
     }
@@ -82,22 +105,56 @@
     function enviarDatos() {
       const fecha = document.getElementById('fecha').value;
       const hora = document.getElementById('hora').value;
-      if(!fecha || !hora){
-        alert('Por favor selecciona fecha y hora');
+
+      if (!fecha || !hora) {
+        const idioma = localStorage.getItem('idioma') || 'es';
+        alert(idioma === 'en'
+          ? 'Please select a date and time.'
+          : 'Por favor selecciona fecha y hora');
         return false;
       }
 
-      // Guardar fecha y hora para usar en registro.html
       localStorage.setItem('fechaSeleccionada', fecha);
       localStorage.setItem('horaSeleccionada', hora);
-
-      // Redirigir a registro.html
       window.location.href = 'registro.html';
-      return false; // prevenir submit normal
+      return false;
     }
 
+    // Traducciones
+    function cambiarIdioma(idioma) {
+      localStorage.setItem('idioma', idioma);
+      aplicarIdioma();
+    }
+
+    function aplicarIdioma() {
+      const idioma = localStorage.getItem('idioma') || 'es';
+      const textos = {
+        es: {
+          titulo: 'Agenda tu cita',
+          labelFecha: 'Selecciona la fecha (próximas 2 semanas):',
+          labelHora: 'Selecciona la hora:',
+          btnSiguiente: 'Siguiente'
+        },
+        en: {
+          titulo: 'Book your appointment',
+          labelFecha: 'Select a date (next 2 weeks):',
+          labelHora: 'Select a time:',
+          btnSiguiente: 'Next'
+        }
+      };
+
+      const t = textos[idioma];
+      document.getElementById('titulo').innerText = t.titulo;
+      document.getElementById('labelFecha').innerText = t.labelFecha;
+      document.getElementById('labelHora').innerText = t.labelHora;
+      document.getElementById('btnSiguiente').innerText = t.btnSiguiente;
+      document.getElementById('idioma').value = idioma;
+    }
+
+    // Ejecutar al cargar
     cargarFechas();
     cargarHoras();
+    aplicarIdioma();
   </script>
 </body>
 </html>
