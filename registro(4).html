@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar cita - Título</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #d36ba0;
+      margin-bottom: 10px;
+    }
+
+    .info {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    form input, form select, form button {
+      display: block;
+      width: 80%;
+      max-width: 300px;
+      margin: 10px auto;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #d36ba0;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b7598d;
+    }
+  </style>
+</head>
+<body>
+  <h1>Registrar cita</h1>
+
+  <div class="info" id="infoCita">
+    Cargando información de tu cita...
+  </div>
+
+  <form id="registroForm" onsubmit="return confirmarCita()">
+    <input type="text" id="nombre" placeholder="Nombre" required />
+    <input type="text" id="apellido" placeholder="Apellido" required />
+    <select id="metodoPago" required>
+      <option value="">Método de pago al finalizar</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+      <option value="Tarjeta">Tarjeta</option>
+    </select>
+    <button type="submit">Confirmar cita</button>
+  </form>
+
+  <script>
+    const diseño = localStorage.getItem('disenoSeleccionado') || 'Sin diseño';
+    const fecha = localStorage.getItem('fechaSeleccionada') || 'Sin fecha';
+    const hora = localStorage.getItem('horaSeleccionada') || 'Sin hora';
+    const duracion = localStorage.getItem('duracion') || '60';
+
+    // Mostrar resumen
+    document.getElementById('infoCita').innerText =
+      `Diseño: ${diseño}\nFecha: ${fecha}\nHora: ${hora}`;
+
+    function confirmarCita() {
+      const nombre = document.getElementById('nombre').value.trim();
+      const apellido = document.getElementById('apellido').value.trim();
+      const metodoPago = document.getElementById('metodoPago').value;
+
+      if (!nombre || !apellido || !metodoPago) {
+        alert("Por favor completa todos los campos.");
+        return false;
+      }
+
+      // Guardar en localStorage para mostrar en la página final
+      localStorage.setItem('nombreCliente', nombre);
+      localStorage.setItem('apellidoCliente', apellido);
+      localStorage.setItem('metodoPago', metodoPago);
+
+      // Guardar cita en un array de citas (para luego bloquear horarios)
+      const nuevaCita = {
+        diseño,
+        fecha,
+        hora,
+        duracion,
+        nombre,
+        apellido,
+        metodoPago
+      };
+
+      const citas = JSON.parse(localStorage.getItem('citas')) || [];
+      citas.push(nuevaCita);
+      localStorage.setItem('citas', JSON.stringify(citas));
+
+      // (Más adelante: aquí enviamos a WhatsApp también)
+
+      // Redirigir a página de agradecimiento
+      window.location.href = 'gracias.html';
+      return false;
+    }
+  </script>
+</body>
+</html>
