@@ -2,145 +2,125 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Registro de Cita</title>
+  <title>Confirmar Cita</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f8f8f8;
-      max-width: 600px;
-      margin: auto;
-    }
-    h1 {
+      background: #f7f7f7;
+      padding: 30px;
       text-align: center;
     }
-    form {
-      background: white;
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+    h3 {
+      font-weight: normal;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    .detalle {
+      background: #fff;
       padding: 20px;
+      margin: 0 auto 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
+      max-width: 400px;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     label {
       display: block;
       margin-top: 15px;
-      font-weight: bold;
+      text-align: left;
     }
     input, select {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      border-radius: 6px;
+      border-radius: 5px;
       border: 1px solid #ccc;
     }
     button {
-      margin-top: 20px;
-      background: #28a745;
-      color: white;
-      padding: 12px;
-      width: 100%;
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 1em;
       border: none;
-      border-radius: 6px;
-      font-size: 1.1em;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
       cursor: pointer;
     }
-    #mensaje {
-      margin-top: 30px;
-      font-size: 1.2em;
-      text-align: center;
-      font-weight: bold;
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <h1>Registrar tu Cita</h1>
+  <h1>¿Confirmar cita?</h1>
+  <h3>Tu cita se registrará sólo si presionas el botón de confirmar. En caso de querer cancelarla, sólo podrás hacerlo con mínimo dos días de anticipación.</h3>
 
-  <div id="infoCita"></div>
+  <div class="detalle" id="infoCita">
+    <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+    <p><strong>Hora:</strong> <span id="hora"></span></p>
+  </div>
 
-  <form id="formulario">
-    <label for="nombre">Nombre *</label>
+  <div class="detalle">
+    <label>Nombre:</label>
     <input type="text" id="nombre" required>
 
-    <label for="apellido">Apellido *</label>
+    <label>Apellido:</label>
     <input type="text" id="apellido" required>
 
-    <label for="metodo">Método de pago *</label>
-    <select id="metodo" required>
-      <option value="">Selecciona una opción</option>
+    <label>Método de pago:</label>
+    <select id="pago">
+      <option value="">Selecciona</option>
       <option value="Efectivo">Efectivo</option>
       <option value="Transferencia">Transferencia</option>
       <option value="Tarjeta">Tarjeta</option>
     </select>
+  </div>
 
-    <button type="submit">Confirmar Cita</button>
-  </form>
-
-  <div id="mensaje"></div>
+  <button onclick="confirmarCita()">Confirmar Cita</button>
 
   <script>
-    function getParametro(nombre) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(nombre);
+    const cita = JSON.parse(localStorage.getItem("citaSeleccionada"));
+    if (!cita) {
+      alert("No se ha seleccionado ningún horario.");
+      window.location.href = "agendar.html";
     }
 
-    const fecha = getParametro("fecha");
-    const hora = getParametro("hora");
-    const diseno = getParametro("diseno");
-    const duracion = getParametro("duracion");
+    document.getElementById("fecha").textContent = cita.fecha;
+    document.getElementById("hora").textContent = cita.hora;
 
-    const infoDiv = document.getElementById("infoCita");
-    infoDiv.innerHTML = `
-      <p><strong>Fecha:</strong> ${fecha}</p>
-      <p><strong>Hora:</strong> ${hora}</p>
-      <p><strong>Diseño:</strong> ${diseno}</p>
-      <p><strong>Duración:</strong> ${duracion} min</p>
-    `;
-
-    const form = document.getElementById("formulario");
-    const mensajeDiv = document.getElementById("mensaje");
-
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-
+    function confirmarCita() {
       const nombre = document.getElementById("nombre").value.trim();
       const apellido = document.getElementById("apellido").value.trim();
-      const metodo = document.getElementById("metodo").value;
+      const pago = document.getElementById("pago").value;
 
-      if (!nombre || !apellido || !metodo) {
+      if (!nombre || !apellido || !pago) {
         alert("Por favor completa todos los campos.");
         return;
       }
 
-      const primerNombre = nombre.split(" ")[0];
+      const nuevaCita = {
+        nombre: nombre + " " + apellido,
+        fecha: cita.fecha,
+        hora: cita.hora,
+        metodo: pago
+      };
 
-      // Mostrar mensaje personalizado
-      mensajeDiv.innerHTML = `¡Gracias ${primerNombre}! Tu cita ha sido registrada con éxito.`;
+      const citas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
+      citas.push(nuevaCita);
+      localStorage.setItem("citasAgendadas", JSON.stringify(citas));
 
-      // Aquí podrías enviar por WhatsApp:
-      const texto = `Nueva cita registrada:
-👤 ${nombre} ${apellido}
-💅 Diseño: ${diseno}
-📅 Fecha: ${fecha}
-🕐 Hora: ${hora}
-⏱️ Duración: ${duracion} min
-💳 Pago: ${metodo}`;
+      const mensaje = `Nueva cita agendada:%0ANombre: ${nuevaCita.nombre}%0AFecha: ${nuevaCita.fecha}%0AHora: ${nuevaCita.hora}%0APago: ${nuevaCita.metodo}`;
+      const numero = "52XXXXXXXXXX"; // Reemplaza con el número real
+      window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
 
-      const telefonoDueña = "523338093018"; // Coloca el número con lada de México sin espacios
-      const linkWhatsApp = `https://wa.me/${telefonoDueña}?text=${encodeURIComponent(texto)}`;
-
-      // Simulación de envío por WhatsApp (puedes redirigir automáticamente si quieres)
-      console.log("Enlace de WhatsApp para la dueña:", linkWhatsApp);
-
-      // También podrías hacer: window.open(linkWhatsApp, "_blank");
-
-      // Guardar la cita final si necesitas (opcional)
-      localStorage.setItem("ultimaCitaConfirmada", JSON.stringify({
-        nombre, apellido, metodo, fecha, hora, diseno, duracion
-      }));
-
-      // Ocultar formulario
-      form.style.display = "none";
-    });
+      localStorage.setItem("clienteNombre", nombre);
+      window.location.href = "agradecimiento.html";
+    }
   </script>
 </body>
 </html>
