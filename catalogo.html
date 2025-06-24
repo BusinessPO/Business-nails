@@ -18,14 +18,14 @@
       margin: 10px auto;
       padding: 15px;
       max-width: 600px;
-      cursor: pointer;
+      cursor: default;
       border-radius: 8px;
       transition: box-shadow 0.3s;
     }
     .diseno:hover {
       box-shadow: 0 0 10px #aaa;
     }
-    .boton-fechas {
+    .boton-registrar {
       margin-top: 10px;
       background-color: #007bff;
       color: white;
@@ -34,44 +34,11 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 1rem;
+      text-decoration: none;
+      display: inline-block;
     }
-    .boton-fechas:hover {
+    .boton-registrar:hover {
       background-color: #0056b3;
-    }
-    #aviso {
-      display: none;
-      position: fixed;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border: 2px solid #007bff;
-      padding: 20px;
-      z-index: 1000;
-      max-width: 300px;
-      text-align: center;
-      border-radius: 10px;
-    }
-    #aviso button {
-      margin-top: 15px;
-      background-color: #28a745;
-      border: none;
-      padding: 10px 20px;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    #aviso button:hover {
-      background-color: #19692c;
-    }
-    #overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.4);
-      z-index: 999;
     }
     #selector-idioma {
       position: fixed;
@@ -94,18 +61,10 @@
     <!-- Aquí se cargarán los diseños -->
   </div>
 
-  <div id="overlay"></div>
-  <div id="aviso">
-    <div id="mensajeAviso"></div>
-    <button id="btnRegistrarCita">Ver fechas y horarios disponibles</button>
-  </div>
-
   <script>
     const textos = {
       es: {
         titulo: "Catálogo de Diseños de Uñas",
-        aviso: "Para agendar, selecciona 'Ver fechas y horarios disponibles'.",
-        btnRegistrar: "Ver fechas y horarios disponibles",
         diseños: [
           {
             nombre: "Manicura Francesa",
@@ -129,8 +88,6 @@
       },
       en: {
         titulo: "Nail Design Catalog",
-        aviso: "To schedule, click 'See available dates and times'.",
-        btnRegistrar: "See available dates and times",
         diseños: [
           {
             nombre: "French Manicure",
@@ -158,65 +115,34 @@
 
     const listaDisenos = document.getElementById("listaDisenos");
     const titulo = document.getElementById("titulo");
-    const aviso = document.getElementById("aviso");
-    const mensajeAviso = document.getElementById("mensajeAviso");
-    const btnRegistrarCita = document.getElementById("btnRegistrarCita");
-    const overlay = document.getElementById("overlay");
     const selectorIdioma = document.getElementById("selector-idioma");
 
     function cargarCatalogo() {
       listaDisenos.innerHTML = "";
       titulo.textContent = textos[idiomaActual].titulo;
 
-      textos[idiomaActual].diseños.forEach((diseno, index) => {
+      textos[idiomaActual].diseños.forEach(diseno => {
         const div = document.createElement("div");
         div.className = "diseno";
-        div.dataset.index = index;
 
         div.innerHTML = `
           <h2>${diseno.nombre}</h2>
           <p>${diseno.descripcion}</p>
           <p><strong>${diseno.costo}</strong> - ${diseno.duracion} ${idiomaActual === "es" ? "minutos" : "minutes"}</p>
-          <button class="boton-fechas">${idiomaActual === "es" ? "Registrar cita" : "Schedule Appointment"}</button>
+          <a href="agendar.html?diseno=${encodeURIComponent(diseno.nombre)}&duracion=${diseno.duracion}" class="boton-registrar">
+            ${idiomaActual === "es" ? "Registrar cita" : "Schedule Appointment"}
+          </a>
         `;
-
-        div.querySelector("button").addEventListener("click", () => {
-          mostrarAviso(index);
-        });
 
         listaDisenos.appendChild(div);
       });
     }
-
-    function mostrarAviso(index) {
-      const diseno = textos[idiomaActual].diseños[index];
-      mensajeAviso.textContent = `${textos[idiomaActual].aviso}`;
-      btnRegistrarCita.textContent = textos[idiomaActual].btnRegistrar;
-
-      overlay.style.display = "block";
-      aviso.style.display = "block";
-
-      btnRegistrarCita.onclick = () => {
-        // Aquí puedes guardar datos del diseño si quieres, pasando por URL
-        // Por ejemplo: registro.html?diseno=Manicura+Francesa&duracion=60
-        const url = `registro.html?diseno=${encodeURIComponent(diseno.nombre)}&duracion=${diseno.duracion}`;
-        window.location.href = url;
-      };
-    }
-
-    function ocultarAviso() {
-      aviso.style.display = "none";
-      overlay.style.display = "none";
-    }
-
-    overlay.addEventListener("click", ocultarAviso);
 
     selectorIdioma.addEventListener("change", (e) => {
       idiomaActual = e.target.value;
       cargarCatalogo();
     });
 
-    // Carga inicial
     cargarCatalogo();
   </script>
 </body>
