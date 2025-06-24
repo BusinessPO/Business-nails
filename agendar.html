@@ -1,222 +1,149 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Agendar cita</title>
+  <meta charset="UTF-8">
+  <title>Confirmar Cita</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
+      background: #f7f7f7;
+      padding: 30px;
       text-align: center;
     }
-    #idiomaSelect {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
     h1 {
+      font-size: 1.8em;
       margin-bottom: 10px;
     }
-    #fechaVisual {
-      font-weight: bold;
-      margin-bottom: 15px;
+    h3 {
+      font-weight: normal;
+      color: #555;
+      margin-bottom: 30px;
     }
-    #fechas {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 20px;
-      gap: 8px;
+    .detalle {
+      background: #fff;
+      padding: 20px;
+      margin: 0 auto 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .fecha {
-      padding: 8px 12px;
-      background: #007bff;
+    label {
+      display: block;
+      margin-top: 15px;
+      text-align: left;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 1em;
+      border: none;
+      background-color: #007bff;
       color: white;
       border-radius: 8px;
       cursor: pointer;
-      user-select: none;
-      min-width: 110px;
-      transition: background-color 0.3s;
     }
-    .fecha.seleccionada {
-      background: #0056b3;
-    }
-    .fecha.no-disponible {
-      background: #ccc;
-      cursor: default;
-      pointer-events: none;
-      color: #666;
-    }
-    #horarios {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-    .hora {
-      display: inline-block;
-      padding: 15px;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      min-width: 70px;
-      user-select: none;
-      transition: background-color 0.3s;
-    }
-    .disponible {
-      background: #28a745;
-    }
-    .ocupado {
-      background: gray;
-      pointer-events: none;
-      color: #ddd;
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <select id="idiomaSelect">
-    <option value="es">Español</option>
-    <option value="en">English</option>
-  </select>
+  <h1>¿Confirmar cita?</h1>
+  <h3>Tu cita se registrará sólo si presionas el botón de confirmar. En caso de querer cancelarla, sólo podrás hacerlo con mínimo dos días de anticipación.</h3>
 
-  <h1 id="titulo">Selecciona una fecha</h1>
-  <p id="fechaVisual"></p>
+  <div class="detalle" id="infoCita">
+    <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+    <p><strong>Hora:</strong> <span id="hora"></span></p>
+  </div>
 
-  <div id="fechas"></div>
+  <div class="detalle">
+    <label>Nombre:</label>
+    <input type="text" id="nombre" required>
 
-  <div id="horarios"></div>
+    <label>Apellido:</label>
+    <input type="text" id="apellido" required>
+
+    <label>Método de pago:</label>
+    <select id="pago">
+      <option value="">Selecciona</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+      <option value="Tarjeta">Tarjeta</option>
+    </select>
+  </div>
+
+  <button onclick="confirmarCita()">Confirmar Cita</button>
 
   <script>
-    // --- Configuración idioma ---
-    const idiomaActual = localStorage.getItem("idioma") || "es";
-    document.getElementById("idiomaSelect").value = idiomaActual;
+    const cita = JSON.parse(localStorage.getItem("citaSeleccionada"));
+    if (!cita) {
+      alert("No se ha seleccionado ningún horario.");
+      window.location.href = "agendar.html";
+    }
 
-    const textos = {
-      es: {
-        tituloFecha: "Selecciona una fecha",
-        citasPara: "Citas para el:",
-        seleccionarHorario: "Selecciona un horario",
-        noFechas: "No hay fechas disponibles",
-      },
-      en: {
-        tituloFecha: "Select a date",
-        citasPara: "Appointments for:",
-        seleccionarHorario: "Select a time slot",
-        noFechas: "No available dates",
+    document.getElementById("fecha").textContent = cita.fecha;
+    document.getElementById("hora").textContent = cita.hora;
+
+    function confirmarCita() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const apellido = document.getElementById("apellido").value.trim();
+      const pago = document.getElementById("pago").value;
+
+      if (!nombre || !apellido || !pago) {
+        alert("Por favor, completa todos los campos.");
+        return;
       }
-    };
 
-    function aplicarIdioma() {
-      const t = textos[document.getElementById("idiomaSelect").value];
-      document.getElementById("titulo").textContent = t.tituloFecha;
-      fechaVisual.textContent = "";
-      horariosDiv.innerHTML = "";
-    }
+      const nuevaCita = {
+        fecha: cita.fecha,
+        hora: cita.hora,
+        nombre,
+        apellido,
+        pago
+      };
 
-    document.getElementById("idiomaSelect").addEventListener("change", function () {
-      localStorage.setItem("idioma", this.value);
-      location.reload();
-    });
+      // Guardar permanentemente
+      const citas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
 
-    aplicarIdioma();
-
-    // --- Variables DOM ---
-    const fechaVisual = document.getElementById("fechaVisual");
-    const fechasDiv = document.getElementById("fechas");
-    const horariosDiv = document.getElementById("horarios");
-
-    // --- Generar fechas válidas ---
-    function esFinDeSemana(date) {
-      const dia = date.getDay();
-      return dia === 0 || dia === 6; // Domingo=0, Sábado=6
-    }
-
-    function formatoFecha(date, locale) {
-      return date.toLocaleDateString(locale, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    }
-
-    function generarFechas(desde, cantidad) {
-      const fechas = [];
-      let diaActual = new Date(desde);
-      while (fechas.length < cantidad) {
-        if (!esFinDeSemana(diaActual)) {
-          fechas.push(new Date(diaActual));
-        }
-        diaActual.setDate(diaActual.getDate() + 1);
+      // Validar que no exista la cita ocupada (evitar duplicados)
+      const existe = citas.some(c => c.fecha === nuevaCita.fecha && c.hora === nuevaCita.hora);
+      if (existe) {
+        alert("Ese horario ya está reservado. Por favor, elige otro.");
+        window.location.href = "agendar.html";
+        return;
       }
-      return fechas;
-    }
 
-    // --- Datos iniciales ---
-    const hoy = new Date();
-    const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 3); // 3 días después
-    const fechasDisponibles = generarFechas(inicio, 14);
+      citas.push(nuevaCita);
+      localStorage.setItem("citasAgendadas", JSON.stringify(citas));
 
-    // Mostrar fechas en selector
-    fechasDisponibles.forEach(fecha => {
-      const btn = document.createElement("div");
-      btn.classList.add("fecha");
-      btn.textContent = formatoFecha(fecha, idiomaActual === 'en' ? 'en-US' : 'es-MX');
-      btn.dataset.fecha = fecha.toISOString().slice(0,10);
+      // Enviar WhatsApp (abre en nueva pestaña)
+      const mensaje = encodeURIComponent(
+        `Nueva cita reservada:\n` +
+        `Fecha: ${nuevaCita.fecha}\n` +
+        `Hora: ${nuevaCita.hora}\n` +
+        `Nombre: ${nuevaCita.nombre} ${nuevaCita.apellido}\n` +
+        `Pago: ${nuevaCita.pago}`
+      );
+      const telefonoDueña = "521234567890"; // Cambia aquí al número de la dueña con código país sin signos ni espacios
+      window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, "_blank");
 
-      btn.addEventListener("click", () => {
-        seleccionarFecha(fecha, btn);
-      });
+      // Limpiar selección temporal
+      localStorage.removeItem("citaSeleccionada");
 
-      fechasDiv.appendChild(btn);
-    });
+      // Guardar nombre para página agradecimiento
+      localStorage.setItem("nombreCliente", nombre);
 
-    // Selección actual
-    let fechaSeleccionada = null;
-    let botonSeleccionado = null;
-
-    // Mostrar horarios para una fecha dada
-    function seleccionarFecha(fecha, boton) {
-      fechaSeleccionada = fecha;
-      if (botonSeleccionado) botonSeleccionado.classList.remove("seleccionada");
-      botonSeleccionado = boton;
-      boton.classList.add("seleccionada");
-
-      fechaVisual.textContent = (idiomaActual === 'en' ? textos.en.citasPara : textos.es.citasPara) + " " + formatoFecha(fecha, idiomaActual === 'en' ? 'en-US' : 'es-MX');
-
-      horariosDiv.innerHTML = "";
-      const horarios = [];
-      for(let i=10; i<=17; i++) horarios.push(i + ":00");
-
-      const citasAgendadas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
-      const ocupadas = citasAgendadas
-        .filter(c => c.fecha === fecha.toISOString().slice(0,10))
-        .map(c => c.hora);
-
-      horarios.forEach(hora => {
-        const btn = document.createElement("div");
-        btn.classList.add("hora");
-        btn.textContent = hora;
-
-        if(ocupadas.includes(hora)){
-          btn.classList.add("ocupado");
-        } else {
-          btn.classList.add("disponible");
-          btn.onclick = () => {
-            localStorage.setItem("citaSeleccionada", JSON.stringify({ fecha: fecha.toISOString().slice(0,10), hora }));
-            window.location.href = "registro.html";
-          };
-        }
-        horariosDiv.appendChild(btn);
-      });
-    }
-
-    // Auto seleccionar la primer fecha válida al cargar
-    if(fechasDisponibles.length > 0){
-      const primerBtn = fechasDiv.querySelector(".fecha");
-      if(primerBtn) primerBtn.click();
+      // Redirigir a agradecimiento
+      window.location.href = "agradecimiento.html";
     }
   </script>
 </body>
