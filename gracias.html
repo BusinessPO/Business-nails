@@ -49,7 +49,7 @@
   </style>
 </head>
 <body>
-  <h1>Catálogo de diseños</h1>
+  <h1 id="titulo">Catálogo de diseños</h1>
 
   <div class="diseno" data-nombre="Uñas francesas" data-costo="300" data-duracion="60">
     <h2>Uñas francesas</h2>
@@ -85,13 +85,18 @@
         const costo = contenedor.getAttribute('data-costo');
         const duracion = contenedor.getAttribute('data-duracion');
 
-        const idioma = localStorage.getItem('idioma') || 'es';
+        const idioma = localStorage.getItem('idiomaSeleccionado') || 'es';
         const textos = {
           es: `Has seleccionado el diseño "${nombre}".\nCosto: $${costo} MXN.\nDuración: ${duracion} minutos.`,
           en: `You have selected the design "${nombre}".\nCost: $${costo} MXN.\nDuration: ${duracion} minutes.`
         };
 
-        if (confirm(textos[idioma] + '\n\n¿Quieres ver fechas y horarios disponibles? / Do you want to see available dates and times?')) {
+        const confirmMensaje = {
+          es: '\n\n¿Quieres ver fechas y horarios disponibles?',
+          en: '\n\nDo you want to see available dates and times?'
+        };
+
+        if (confirm(textos[idioma] + confirmMensaje[idioma])) {
           // Guardar selección
           localStorage.setItem('disenoSeleccionado', nombre);
           localStorage.setItem('duracion', duracion);
@@ -101,6 +106,13 @@
         }
       });
     });
+
+    // Cambiar texto visible según idioma
+    const textosTitulo = {
+      es: "Catálogo de diseños",
+      en: "Design Catalog"
+    };
+    document.getElementById('titulo').textContent = textosTitulo[localStorage.getItem('idiomaSeleccionado') || 'es'];
   </script>
 </body>
 </html>
