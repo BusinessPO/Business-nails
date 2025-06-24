@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Confirmar Cita</title>
   <style>
     body {
@@ -39,6 +39,7 @@
       margin-top: 5px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 1em;
     }
     button {
       margin-top: 30px;
@@ -58,7 +59,8 @@
 <body>
 
   <h1>¿Confirmar cita?</h1>
-  <h3>Tu cita se registrará sólo si presionas el botón de confirmar. En caso de querer cancelarla, sólo podrás hacerlo con mínimo dos días de anticipación.</h3>
+  <h3>Tu cita se registrará sólo si presionas el botón de confirmar.<br>
+      En caso de querer cancelarla, sólo podrás hacerlo con mínimo dos días de anticipación.</h3>
 
   <div class="detalle" id="infoCita">
     <p><strong>Fecha:</strong> <span id="fecha"></span></p>
@@ -66,14 +68,14 @@
   </div>
 
   <div class="detalle">
-    <label>Nombre:</label>
-    <input type="text" id="nombre" required>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" required />
 
-    <label>Apellido:</label>
-    <input type="text" id="apellido" required>
+    <label for="apellido">Apellido:</label>
+    <input type="text" id="apellido" required />
 
-    <label>Método de pago:</label>
-    <select id="pago">
+    <label for="pago">Método de pago:</label>
+    <select id="pago" required>
       <option value="">Selecciona</option>
       <option value="Efectivo">Efectivo</option>
       <option value="Transferencia">Transferencia</option>
@@ -84,12 +86,14 @@
   <button onclick="confirmarCita()">Confirmar Cita</button>
 
   <script>
+    // Obtener la cita temporal desde agendar.html
     const cita = JSON.parse(localStorage.getItem("citaSeleccionada"));
     if (!cita) {
-      alert("No se ha seleccionado ningún horario.");
+      alert("No has seleccionado ningún horario. Serás redirigido para agendar.");
       window.location.href = "agendar.html";
     }
 
+    // Mostrar la fecha y hora seleccionadas
     document.getElementById("fecha").textContent = cita.fecha;
     document.getElementById("hora").textContent = cita.hora;
 
@@ -111,21 +115,23 @@
         pago
       };
 
-      // Guardar permanentemente
-      const citas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
+      // Obtener citas ya agendadas
+      const citasGuardadas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
 
-      // Validar que no exista la cita ocupada (evitar duplicados)
-      const existe = citas.some(c => c.fecha === nuevaCita.fecha && c.hora === nuevaCita.hora);
+      // Validar si ya está ocupado ese horario
+      const existe = citasGuardadas.some(c => c.fecha === nuevaCita.fecha && c.hora === nuevaCita.hora);
       if (existe) {
-        alert("Ese horario ya está reservado. Por favor, elige otro.");
+        alert("Ese horario ya está reservado. Por favor elige otro.");
         window.location.href = "agendar.html";
         return;
       }
 
-      citas.push(nuevaCita);
-      localStorage.setItem("citasAgendadas", JSON.stringify(citas));
+      // Guardar nueva cita
+      citasGuardadas.push(nuevaCita);
+      localStorage.setItem("citasAgendadas", JSON.stringify(citasGuardadas));
 
-      // Enviar WhatsApp (abre en nueva pestaña)
+      // Enviar mensaje WhatsApp a la dueña
+      const telefonoDueña = "521234567890"; // Pon aquí el número correcto con código país y sin signos
       const mensaje = encodeURIComponent(
         `Nueva cita reservada:\n` +
         `Fecha: ${nuevaCita.fecha}\n` +
@@ -133,16 +139,16 @@
         `Nombre: ${nuevaCita.nombre} ${nuevaCita.apellido}\n` +
         `Pago: ${nuevaCita.pago}`
       );
-      const telefonoDueña = "523338093018"; // Cambia aquí al número de la dueña con código país sin signos ni espacios
+
       window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, "_blank");
 
-      // Limpiar selección temporal
+      // Limpiar cita temporal
       localStorage.removeItem("citaSeleccionada");
 
-      // Guardar nombre para página agradecimiento
+      // Guardar nombre para agradecer personalizado
       localStorage.setItem("nombreCliente", nombre);
 
-      // Redirigir a agradecimiento
+      // Redirigir a página de agradecimiento
       window.location.href = "agradecimiento.html";
     }
   </script>
