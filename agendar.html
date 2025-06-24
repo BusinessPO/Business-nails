@@ -1,66 +1,63 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Agendar cita</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background: #f5f5f5;
-    text-align: center;
-  }
-  table {
-    margin: 0 auto;
-    border-collapse: collapse;
-    width: 95%;
-  }
-  th, td {
-    border: 1px solid #999;
-    padding: 8px;
-    text-align: center;
-    vertical-align: top;
-  }
-  th {
-    background-color: #007bff;
-    color: white;
-  }
-
-  /* Contenedor para horarios en cuadricula */
-  .contenedor-horarios {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 8px;
-    justify-items: center;
-  }
-
-  .horario {
-    cursor: pointer;
-    border-radius: 6px;
-    color: white;
-    font-weight: bold;
-    padding: 8px 0;
-    width: 60px;
-    user-select: none;
-    box-shadow: 0 2px 5px rgb(0 0 0 / 0.15);
-    transition: background-color 0.2s ease;
-  }
-  .disponible {
-    background-color: #28a745; /* verde */
-  }
-  .seleccionado {
-    background-color: #007bff; /* azul */
-  }
-  .ocupado {
-    background-color: gray;
-    cursor: not-allowed;
-    color: #ccc;
-    box-shadow: none;
-  }
-  h1 {
-    margin-bottom: 15px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>Agendar cita</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      text-align: center;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 95%;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px;
+      text-align: center;
+      vertical-align: top;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    .contenedor-horarios {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+      justify-items: center;
+    }
+    .horario {
+      cursor: pointer;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      padding: 8px 0;
+      width: 60px;
+      user-select: none;
+      box-shadow: 0 2px 5px rgb(0 0 0 / 0.15);
+      transition: background-color 0.2s ease;
+    }
+    .disponible {
+      background-color: #28a745;
+    }
+    .seleccionado {
+      background-color: #007bff;
+    }
+    .ocupado {
+      background-color: gray;
+      cursor: not-allowed;
+      color: #ccc;
+      box-shadow: none;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
 
@@ -74,7 +71,7 @@
     </tr>
   </thead>
   <tbody>
-    <!-- Se llenará con JS -->
+    <!-- Se llenará con JavaScript -->
   </tbody>
 </table>
 
@@ -90,7 +87,7 @@
     return fecha.toLocaleDateString("es-MX", { weekday:"short", day:"numeric", month:"numeric" });
   }
 
-  const citasAgendadas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
+  const citasAgendadas = JSON.parse(localStorage.getItem("citasConfirmadas") || "[]");
 
   function generarFechas(desde, cantidad) {
     const fechas = [];
@@ -118,8 +115,6 @@
     fila.appendChild(tdFecha);
 
     const tdHorarios = document.createElement("td");
-
-    // Creamos un contenedor para la cuadrícula
     const contenedorHorarios = document.createElement("div");
     contenedorHorarios.classList.add("contenedor-horarios");
 
@@ -139,18 +134,20 @@
         divHorario.title = "Horario disponible";
 
         divHorario.addEventListener("click", () => {
-          // Quitar seleccionado de otros horarios
+          // Quitar seleccionados anteriores
           document.querySelectorAll(".seleccionado").forEach(el => {
             el.classList.remove("seleccionado");
             el.classList.add("disponible");
           });
+
           // Marcar este como seleccionado
           divHorario.classList.remove("disponible");
           divHorario.classList.add("seleccionado");
 
-          // Guardar y redirigir
+          // Guardar selección en localStorage
           localStorage.setItem("citaSeleccionada", JSON.stringify({ fecha: fechaStr, hora }));
 
+          // Redirigir a registro.html
           setTimeout(() => {
             window.location.href = "registro.html";
           }, 300);
