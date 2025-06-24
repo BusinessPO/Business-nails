@@ -2,211 +2,108 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Business Nails</title>
+  <title>Inicio - Business Nails</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #fefefe;
-      padding: 40px;
+      padding: 20px;
       text-align: center;
+      background: #f8f8f8;
     }
     h1 {
-      font-size: 2em;
-      margin-bottom: 30px;
+      color: #ff1493;
     }
-    button {
-      padding: 15px 30px;
+    .boton {
+      display: inline-block;
       margin: 10px;
-      font-size: 1.1em;
+      padding: 12px 24px;
+      font-size: 16px;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #007bff;
+      border-radius: 10px;
+      background-color: #ff69b4;
       color: white;
-      transition: background 0.3s;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
-    button:hover {
-      background-color: #0056b3;
+    .boton:hover {
+      background-color: #ff1493;
     }
-    #idiomaSelect {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-    #cancelarModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    #cancelarContenido {
+    .form-cancelar {
+      margin-top: 30px;
       background: white;
       padding: 20px;
+      display: inline-block;
       border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      text-align: left;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     input {
-      width: 100%;
-      margin-top: 10px;
       padding: 10px;
+      width: 250px;
+      margin: 10px 0;
       border-radius: 6px;
       border: 1px solid #ccc;
-    }
-    #cancelarMensaje {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    .cerrar {
-      float: right;
-      cursor: pointer;
-      font-size: 1.2em;
-      color: red;
     }
   </style>
 </head>
 <body>
 
-  <select id="idiomaSelect">
-    <option value="es">Español</option>
-    <option value="en">English</option>
-  </select>
+<h1>Business Nails</h1>
 
-  <h1>Business Nails</h1>
+<button class="boton" onclick="window.location.href='catalogo.html'">Catálogo</button>
+<button class="boton" onclick="alert('Para agendar primero selecciona un diseño en el catálogo y luego regresa aquí a agendar.')">Agendar</button>
 
-  <button id="btnCatalogo">Catálogo</button>
-  <button id="btnAgendar">Agendar</button>
-  <button id="btnCancelar">Cancelar cita</button>
+<!-- Formulario para cancelar cita -->
+<div class="form-cancelar">
+  <h2>Cancelar cita</h2>
+  <form id="formCancelar">
+    <input type="text" id="nombreCancelar" placeholder="Nombre registrado" required /><br>
+    <input type="text" id="apellidoCancelar" placeholder="Apellido registrado" required /><br>
+    <input type="date" id="fechaCancelar" required /><br>
+    <button type="submit" class="boton">Cancelar cita</button>
+  </form>
+</div>
 
-  <!-- Modal Cancelar -->
-  <div id="cancelarModal">
-    <div id="cancelarContenido">
-      <span class="cerrar" onclick="cerrarCancelar()">✖</span>
-      <h3 id="cancelarTitulo">Cancelar Cita</h3>
-      <label id="labelNombre">Nombre:</label>
-      <input type="text" id="nombreCancelar" placeholder="Tu nombre">
-      <label id="labelFecha">Fecha de la cita (AAAA-MM-DD):</label>
-      <input type="date" id="fechaCancelar">
-      <button onclick="cancelarCita()" id="btnConfirmarCancelacion">Confirmar Cancelación</button>
-      <div id="cancelarMensaje"></div>
-    </div>
-  </div>
+<script>
+  const formCancelar = document.getElementById("formCancelar");
 
-  <script>
-    const textos = {
-      es: {
-        catalogo: "Catálogo",
-        agendar: "Agendar",
-        cancelar: "Cancelar cita",
-        instruccion: "Para agendar primero selecciona un diseño en el Catálogo, luego presiona 'Agendar'.",
-        cancelarTitulo: "Cancelar Cita",
-        labelNombre: "Nombre:",
-        labelFecha: "Fecha de la cita (AAAA-MM-DD):",
-        confirmarCancelacion: "Confirmar Cancelación",
-        camposIncompletos: "Por favor completa todos los campos.",
-        muyTarde: "Solo puedes cancelar citas con al menos 2 días de anticipación.",
-        citaCancelada: "Cita cancelada exitosamente.",
-        noEncontrada: "No se encontró una cita con ese nombre y fecha."
-      },
-      en: {
-        catalogo: "Catalog",
-        agendar: "Schedule",
-        cancelar: "Cancel Appointment",
-        instruccion: "To schedule, first choose a design in the Catalog, then click 'Schedule'.",
-        cancelarTitulo: "Cancel Appointment",
-        labelNombre: "Name:",
-        labelFecha: "Appointment date (YYYY-MM-DD):",
-        confirmarCancelacion: "Confirm Cancellation",
-        camposIncompletos: "Please fill in all fields.",
-        muyTarde: "You can only cancel appointments at least 2 days in advance.",
-        citaCancelada: "Appointment successfully cancelled.",
-        noEncontrada: "No appointment found with that name and date."
-      }
-    };
+  formCancelar.addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    let idiomaActual = localStorage.getItem("idioma") || "es";
-    const idiomaSelect = document.getElementById("idiomaSelect");
-    idiomaSelect.value = idiomaActual;
+    const nombre = document.getElementById("nombreCancelar").value.trim().toLowerCase();
+    const apellido = document.getElementById("apellidoCancelar").value.trim().toLowerCase();
+    const fecha = document.getElementById("fechaCancelar").value;
 
-    function aplicarIdioma() {
-      const t = textos[idiomaActual];
-      document.getElementById("btnCatalogo").textContent = t.catalogo;
-      document.getElementById("btnAgendar").textContent = t.agendar;
-      document.getElementById("btnCancelar").textContent = t.cancelar;
-      document.getElementById("cancelarTitulo").textContent = t.cancelarTitulo;
-      document.getElementById("labelNombre").textContent = t.labelNombre;
-      document.getElementById("labelFecha").textContent = t.labelFecha;
-      document.getElementById("btnConfirmarCancelacion").textContent = t.confirmarCancelacion;
+    let citas = JSON.parse(localStorage.getItem("citasConfirmadas") || "[]");
+    const index = citas.findIndex(cita => 
+      cita.nombre.toLowerCase() === nombre &&
+      cita.apellido.toLowerCase() === apellido &&
+      cita.fecha === fecha
+    );
+
+    if (index === -1) {
+      alert("No se encontró una cita confirmada con esos datos.");
+      return;
     }
 
-    idiomaSelect.addEventListener("change", function () {
-      idiomaActual = idiomaSelect.value;
-      localStorage.setItem("idioma", idiomaActual);
-      aplicarIdioma();
-    });
+    const hoy = new Date();
+    const fechaCita = new Date(fecha);
+    const diferenciaDias = Math.floor((fechaCita - hoy) / (1000 * 60 * 60 * 24));
 
-    aplicarIdioma();
-
-    document.getElementById("btnCatalogo").onclick = () => window.location.href = "catalogo.html";
-
-    document.getElementById("btnAgendar").onclick = () => {
-      alert(textos[idiomaActual].instruccion);
-    };
-
-    document.getElementById("btnCancelar").onclick = abrirCancelar;
-
-    function abrirCancelar() {
-      document.getElementById("cancelarModal").style.display = "flex";
-      document.getElementById("cancelarMensaje").innerHTML = "";
+    if (diferenciaDias < 2) {
+      alert("Solo puedes cancelar una cita con al menos 2 días de anticipación.");
+      return;
     }
 
-    function cerrarCancelar() {
-      document.getElementById("cancelarModal").style.display = "none";
-      document.getElementById("nombreCancelar").value = "";
-      document.getElementById("fechaCancelar").value = "";
-    }
+    const citaCancelada = citas.splice(index, 1)[0];
+    localStorage.setItem("citasConfirmadas", JSON.stringify(citas));
+    alert("Tu cita ha sido cancelada.");
 
-    function cancelarCita() {
-      const nombre = document.getElementById("nombreCancelar").value.trim().toLowerCase();
-      const fecha = document.getElementById("fechaCancelar").value;
-      const mensajeDiv = document.getElementById("cancelarMensaje");
-      const t = textos[idiomaActual];
+    // Enviar mensaje por WhatsApp
+    const mensaje = `🚫 CANCELACIÓN DE CITA\nNombre: ${citaCancelada.nombre} ${citaCancelada.apellido}\nFecha: ${citaCancelada.fecha}\nHora: ${citaCancelada.hora}`;
+    const whatsapp = "https://wa.me/523338093018?text=" + encodeURIComponent(mensaje);
+    window.open(whatsapp, "_blank");
+  });
+</script>
 
-      if (!nombre || !fecha) {
-        mensajeDiv.innerText = t.camposIncompletos;
-        mensajeDiv.style.color = "red";
-        return;
-      }
-
-      const hoy = new Date();
-      const fechaCita = new Date(fecha);
-      const diff = (fechaCita - hoy) / (1000 * 60 * 60 * 24);
-
-      if (diff < 2) {
-        mensajeDiv.innerText = t.muyTarde;
-        mensajeDiv.style.color = "red";
-        return;
-      }
-
-      const citas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
-      const index = citas.findIndex(c =>
-        c.fecha === fecha && c.nombre && c.nombre.toLowerCase().includes(nombre)
-      );
-
-      if (index >= 0) {
-        citas.splice(index, 1);
-        localStorage.setItem("citasAgendadas", JSON.stringify(citas));
-        mensajeDiv.innerText = t.citaCancelada;
-        mensajeDiv.style.color = "green";
-      } else {
-        mensajeDiv.innerText = t.noEncontrada;
-        mensajeDiv.style.color = "red";
-      }
-    }
-  </script>
 </body>
 </html>
