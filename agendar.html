@@ -19,30 +19,43 @@
     border: 1px solid #999;
     padding: 8px;
     text-align: center;
+    vertical-align: top;
   }
   th {
     background-color: #007bff;
     color: white;
   }
-  td.horario {
+
+  /* Contenedor para horarios en cuadricula */
+  .contenedor-horarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+    justify-items: center;
+  }
+
+  .horario {
     cursor: pointer;
     border-radius: 6px;
     color: white;
     font-weight: bold;
-    margin: 0 4px;
-    padding: 6px 12px;
-    display: inline-block;
+    padding: 8px 0;
+    width: 60px;
+    user-select: none;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.15);
+    transition: background-color 0.2s ease;
   }
-  td.disponible {
+  .disponible {
     background-color: #28a745; /* verde */
   }
-  td.seleccionado {
+  .seleccionado {
     background-color: #007bff; /* azul */
   }
-  td.ocupado {
+  .ocupado {
     background-color: gray;
     cursor: not-allowed;
     color: #ccc;
+    box-shadow: none;
   }
   h1 {
     margin-bottom: 15px;
@@ -68,21 +81,17 @@
 <script>
   const tablaBody = document.querySelector("#tablaCitas tbody");
 
-  // Función para saber si día es fin de semana
   function esFinDeSemana(fecha) {
     const dia = fecha.getDay();
     return dia === 0 || dia === 6;
   }
 
-  // Función para formatear fecha dd/mm/aaaa con día corto
   function formatearFecha(fecha) {
     return fecha.toLocaleDateString("es-MX", { weekday:"short", day:"numeric", month:"numeric" });
   }
 
-  // Obtener citas ocupadas (desde localStorage)
   const citasAgendadas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
 
-  // Generar fechas desde 3 días después, 14 días (solo lunes-viernes)
   function generarFechas(desde, cantidad) {
     const fechas = [];
     let fecha = new Date(desde);
@@ -99,58 +108,59 @@
   const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 3);
   const fechas = generarFechas(inicio, 14);
 
-  // Horarios disponibles (hora inicio)
   const horarios = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
   fechas.forEach(fecha => {
     const fila = document.createElement("tr");
 
-    // Columna fecha
     const tdFecha = document.createElement("td");
     tdFecha.textContent = formatearFecha(fecha);
     fila.appendChild(tdFecha);
 
-    // Columna horarios
     const tdHorarios = document.createElement("td");
 
-    horarios.forEach(hora => {
-      const span = document.createElement("span");
-      span.textContent = hora;
-      span.classList.add("horario");
+    // Creamos un contenedor para la cuadrícula
+    const contenedorHorarios = document.createElement("div");
+    contenedorHorarios.classList.add("contenedor-horarios");
 
-      // Verificar si horario está ocupado
+    horarios.forEach(hora => {
+      const divHorario = document.createElement("div");
+      divHorario.textContent = hora;
+      divHorario.classList.add("horario");
+
       const fechaStr = fecha.toISOString().slice(0,10);
       const estaOcupado = citasAgendadas.some(cita => cita.fecha === fechaStr && cita.hora === hora);
 
-      if(estaOcupado) {
-        span.classList.add("ocupado");
-        span.title = "Horario ocupado";
+      if (estaOcupado) {
+        divHorario.classList.add("ocupado");
+        divHorario.title = "Horario ocupado";
       } else {
-        span.classList.add("disponible");
-        span.title = "Horario disponible";
+        divHorario.classList.add("disponible");
+        divHorario.title = "Horario disponible";
 
-        span.addEventListener("click", () => {
-          // Remover clase 'seleccionado' de cualquier otro horario disponible
+        divHorario.addEventListener("click", () => {
+          // Quitar seleccionado de otros horarios
           document.querySelectorAll(".seleccionado").forEach(el => {
             el.classList.remove("seleccionado");
             el.classList.add("disponible");
           });
+          // Marcar este como seleccionado
+          divHorario.classList.remove("disponible");
+          divHorario.classList.add("seleccionado");
 
-          // Marcar este horario como seleccionado
-          span.classList.remove("disponible");
-          span.classList.add("seleccionado");
-
-          // Guardar selección temporal y redirigir a registro después de un pequeño delay para que se vea el cambio
+          // Guardar y redirigir
           localStorage.setItem("citaSeleccionada", JSON.stringify({ fecha: fechaStr, hora }));
 
           setTimeout(() => {
             window.location.href = "registro.html";
-          }, 300); // 300ms para que se note el cambio de color
+          }, 300);
         });
       }
-      tdHorarios.appendChild(span);
+
+      contenedorHorarios.appendChild(divHorario);
     });
 
+    tdHorarios.appendChild(contenedorHorarios);
     fila.appendChild(tdHorarios);
     tablaBody.appendChild(fila);
   });
