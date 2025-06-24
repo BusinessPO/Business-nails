@@ -44,25 +44,29 @@
     }
     form {
       margin-top: 20px;
-      display: inline-block;
+      display: none; /* ocultamos por defecto */
       text-align: left;
       background: white;
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 0 10px #ccc;
+      max-width: 300px;
+      margin: 20px auto 0 auto;
     }
     input {
       display: block;
       margin-bottom: 10px;
       padding: 8px;
-      width: 250px;
+      width: 100%;
       border-radius: 5px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     #mensajeCancelacion {
       margin-top: 15px;
-      color: #dc3545;
+      color: #555; /* cambio de rojo a gris oscuro */
       font-weight: bold;
+      min-height: 1.2em; /* para que no cambie altura al aparecer y desaparecer */
     }
   </style>
 </head>
@@ -81,7 +85,7 @@
 
   <div id="avisoAgendar"></div>
 
-  <form id="formCancelar" style="display:none;">
+  <form id="formCancelar">
     <h3 id="tituloCancelar">Cancelar cita</h3>
     <input type="text" id="nombreCancel" placeholder="Nombre" required />
     <input type="text" id="apellidoCancel" placeholder="Apellido" required />
@@ -169,8 +173,14 @@
 
     // Botón cancelar cita muestra formulario
     document.getElementById("botonCancelar").addEventListener("click", () => {
-      document.getElementById("formCancelar").style.display = "block";
-      document.getElementById("mensajeCancelacion").textContent = "";
+      const form = document.getElementById("formCancelar");
+      if (form.style.display === "block") {
+        form.style.display = "none";
+        document.getElementById("mensajeCancelacion").textContent = "";
+      } else {
+        form.style.display = "block";
+        document.getElementById("mensajeCancelacion").textContent = "";
+      }
     });
 
     // Manejar cancelación de cita
