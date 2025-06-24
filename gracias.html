@@ -3,116 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catálogo de diseños</title>
+  <title>Gracias por tu cita</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #fff0f5;
-      padding: 20px;
+      padding: 30px;
       text-align: center;
+      color: #d36ba0;
     }
     h1 {
-      color: #d36ba0;
-      margin-bottom: 25px;
-    }
-    .diseno {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #d36ba0aa;
-      padding: 20px;
+      font-size: 2.5rem;
       margin-bottom: 20px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
     }
-    .diseno h2 {
-      color: #b03050;
-      margin-top: 0;
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
     }
-    .diseno p {
-      margin: 6px 0;
-    }
-    .diseno button {
+    .boton-regresar {
       background-color: #d36ba0;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
       cursor: pointer;
-      font-size: 16px;
-      margin-top: 10px;
+      text-decoration: none;
     }
-    .diseno button:hover {
+    .boton-regresar:hover {
       background-color: #b7598d;
     }
   </style>
 </head>
 <body>
-  <h1 id="titulo">Catálogo de diseños</h1>
-
-  <div class="diseno" data-nombre="Uñas francesas" data-costo="300" data-duracion="60">
-    <h2>Uñas francesas</h2>
-    <p>Clásico diseño francés, elegante y sencillo.</p>
-    <p>Costo: $300 MXN</p>
-    <p>Duración: 60 minutos</p>
-    <button>Seleccionar diseño</button>
-  </div>
-
-  <div class="diseno" data-nombre="Uñas con brillo" data-costo="400" data-duracion="75">
-    <h2>Uñas con brillo</h2>
-    <p>Diseño con esmalte y detalles brillantes.</p>
-    <p>Costo: $400 MXN</p>
-    <p>Duración: 75 minutos</p>
-    <button>Seleccionar diseño</button>
-  </div>
-
-  <div class="diseno" data-nombre="Uñas artísticas" data-costo="550" data-duracion="90">
-    <h2>Uñas artísticas</h2>
-    <p>Diseños personalizados y creativos.</p>
-    <p>Costo: $550 MXN</p>
-    <p>Duración: 90 minutos</p>
-    <button>Seleccionar diseño</button>
-  </div>
+  <h1>¡Gracias, <span id="nombreCliente"></span>!</h1>
+  <p>Tu cita ha sido confirmada exitosamente.</p>
+  <a href="index.html" class="boton-regresar">Regresar al inicio</a>
 
   <script>
-    const botones = document.querySelectorAll('.diseno button');
-
-    botones.forEach(boton => {
-      boton.addEventListener('click', () => {
-        const contenedor = boton.parentElement;
-        const nombre = contenedor.getAttribute('data-nombre');
-        const costo = contenedor.getAttribute('data-costo');
-        const duracion = contenedor.getAttribute('data-duracion');
-
-        const idioma = localStorage.getItem('idiomaSeleccionado') || 'es';
-        const textos = {
-          es: `Has seleccionado el diseño "${nombre}".\nCosto: $${costo} MXN.\nDuración: ${duracion} minutos.`,
-          en: `You have selected the design "${nombre}".\nCost: $${costo} MXN.\nDuration: ${duracion} minutes.`
-        };
-
-        const confirmMensaje = {
-          es: '\n\n¿Quieres ver fechas y horarios disponibles?',
-          en: '\n\nDo you want to see available dates and times?'
-        };
-
-        if (confirm(textos[idioma] + confirmMensaje[idioma])) {
-          // Guardar selección
-          localStorage.setItem('disenoSeleccionado', nombre);
-          localStorage.setItem('duracion', duracion);
-
-          // Ir a agendar
-          window.location.href = 'agendar.html';
-        }
-      });
-    });
-
-    // Cambiar texto visible según idioma
-    const textosTitulo = {
-      es: "Catálogo de diseños",
-      en: "Design Catalog"
-    };
-    document.getElementById('titulo').textContent = textosTitulo[localStorage.getItem('idiomaSeleccionado') || 'es'];
+    // Mostrar nombre guardado para personalizar mensaje
+    const nombre = localStorage.getItem('nombreCliente') || 'Cliente';
+    document.getElementById('nombreCliente').textContent = nombre;
   </script>
 </body>
 </html>
