@@ -63,38 +63,15 @@
 </head>
 <body>
 
-  <h1 id="tituloGracias">¡Gracias por agendar tu cita!</h1>
-  <p id="mensajeGracias">Tu cita ha sido registrada correctamente. Te esperamos pronto. 💅</p>
+  <h1 id="tituloGracias">¡Thank you for scheduling your appointment!</h1>
+  <p id="mensajeGracias">Your appointment has been successfully registered. We look forward to seeing you soon. 💅</p>
   
     // Aplicar textos según idioma
     const t = textos[idioma];
     document.getElementById("tituloGracias").textContent = t.titulo;
     document.getElementById("mensajeGracias").textContent = t.mensaje;
     document.getElementById("botonInicio").textContent = t.botonInicio;
-
-    // Cambiar texto de diseños y botones
-    document.querySelectorAll(".diseno").forEach(div => {
-      const nombre = div.getAttribute("data-nombre");
-      const costo = div.getAttribute("data-costo");
-      const duracion = div.getAttribute("data-duracion");
-
-      div.querySelector("button").textContent = idioma === "es" ? "Seleccionar diseño" : "Select design";
-      div.querySelector("p:nth-child(3)").textContent = `${t.costo}: $${costo} MXN`;
-      div.querySelector("p:nth-child(4)").textContent = `${t.duracion}: ${duracion} ${t.minutos}`;
-    });
-
-    // Función para seleccionar diseño
-    function seleccionarDiseño(boton) {
-      const div = boton.parentElement;
-      const nombre = div.getAttribute("data-nombre");
-      const costo = div.getAttribute("data-costo");
-      const duracion = div.getAttribute("data-duracion");
-
-      const confirmacion = confirm(`${t.confirmacion} "${nombre}".\n${t.costo}: $${costo} MXN.\n${t.duracion}: ${duracion} ${t.minutos}.\n\n${t.pregunta}`);
-
-      if (confirmacion) {
-        localStorage.setItem("disenoSeleccionado", nombre);
-        localStorage.setItem("duracion", duracion);
+  
         window.location.href = "agendar.html";
       }
     }
