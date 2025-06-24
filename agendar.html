@@ -11,7 +11,11 @@
       text-align: center;
     }
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+    }
+    #fechaVisual {
+      font-weight: bold;
+      margin-bottom: 25px;
     }
     .hora {
       display: inline-block;
@@ -43,6 +47,7 @@
   </select>
 
   <h1 id="titulo">Selecciona un horario</h1>
+  <p id="fechaVisual"></p>
 
   <div id="horarios"></div>
 
@@ -51,8 +56,8 @@
     document.getElementById("idiomaSelect").value = idiomaActual;
 
     const textos = {
-      es: { titulo: "Selecciona un horario" },
-      en: { titulo: "Select a Time Slot" }
+      es: { titulo: "Selecciona un horario", fechaLabel: "Citas disponibles para el: " },
+      en: { titulo: "Select a Time Slot", fechaLabel: "Available appointments for: " }
     };
 
     function aplicarIdioma() {
@@ -67,15 +72,24 @@
 
     aplicarIdioma();
 
+    // Generar horarios de 10am a 5pm
     const horarios = [];
     for (let i = 10; i <= 17; i++) {
       horarios.push(`${i}:00`);
     }
 
+    // Calcular fecha 3 días después del actual
     const hoy = new Date();
     const fechaBase = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 3);
     const fechaStr = fechaBase.toISOString().slice(0, 10);
 
+    // Mostrar fecha visible
+    const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const fechaLegible = fechaBase.toLocaleDateString(idiomaActual === 'en' ? 'en-US' : 'es-MX', opcionesFecha);
+    document.getElementById("fechaVisual").textContent =
+      (idiomaActual === 'en' ? textos.en.fechaLabel : textos.es.fechaLabel) + fechaLegible;
+
+    // Verificar horarios ocupados
     const citasAgendadas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
     const ocupadasHoy = citasAgendadas
       .filter(c => c.fecha === fechaStr)
