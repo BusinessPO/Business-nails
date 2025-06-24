@@ -2,178 +2,268 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registro de cita</title>
+  <title>Agendar Cita</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff0f5;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      text-align: center;
+      background: #fafafa;
+      max-width: 700px;
+      margin: auto;
     }
     h1 {
-      color: #d36ba0;
-      margin-bottom: 20px;
+      text-align: center;
     }
-    form {
-      max-width: 400px;
-      margin: auto;
-      text-align: left;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #555;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-      font-size: 16px;
-    }
-    button {
-      margin-top: 25px;
-      width: 100%;
+    #infoDiseno {
+      background: white;
       padding: 15px;
-      font-size: 18px;
-      background-color: #d36ba0;
-      border: none;
-      border-radius: 12px;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px #ccc;
     }
-    button:hover {
-      background-color: #b7598d;
+    #calendario {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .dia {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+      width: 100px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    .dia.no-disponible {
+      background: #ccc;
+      cursor: not-allowed;
+      color: #666;
+    }
+    .dia.seleccionado {
+      background: #28a745;
+      color: white;
+    }
+    #horarios {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .hora {
+      background: white;
+      border: 1px solid #007bff;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    .hora.no-disponible {
+      background: #ccc;
+      cursor: not-allowed;
+      color: #666;
+      border-color: #999;
+    }
+    .hora.seleccionada {
+      background: #007bff;
+      color: white;
+    }
+    #btnRegistrar {
+      margin-top: 30px;
+      display: block;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      user-select: none;
+      width: 100%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #btnRegistrar.enabled {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #mensaje {
+      margin-top: 10px;
+      text-align: center;
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1 id="titulo">Formulario de registro</h1>
-  <form id="formRegistro">
-    <label for="nombre" id="labelNombre">Nombre:</label>
-    <input type="text" id="nombre" required />
 
-    <label for="apellido" id="labelApellido">Apellido:</label>
-    <input type="text" id="apellido" required />
+  <h1>Agendar Cita</h1>
 
-    <label for="metodoPago" id="labelPago">Método de pago:</label>
-    <select id="metodoPago" required>
-      <option value="" disabled selected>Selecciona método de pago</option>
-      <option value="Efectivo">Efectivo</option>
-      <option value="Tarjeta">Tarjeta</option>
-      <option value="Transferencia">Transferencia</option>
-      <option value="Otro">Otro</option>
-    </select>
+  <div id="infoDiseno">
+    <p><strong>Diseño seleccionado:</strong> <span id="nombreDiseno"></span></p>
+    <p><strong>Duración (minutos):</strong> <span id="duracionDiseno"></span></p>
+  </div>
 
-    <button type="submit" id="btnConfirmar">Confirmar cita</button>
-  </form>
+  <div>
+    <h3>Selecciona una fecha (a partir de 3 días después de hoy):</h3>
+    <div id="calendario"></div>
+  </div>
+
+  <div>
+    <h3>Selecciona un horario:</h3>
+    <div id="horarios"></div>
+  </div>
+
+  <button id="btnRegistrar" disabled>Registrar</button>
+  <div id="mensaje"></div>
 
   <script>
-    const telefonoDueña = '521XXXXXXXXXX'; // Cambia al número real
-
-    function aplicarIdioma() {
-      const idioma = localStorage.getItem('idioma') || 'es';
-      const textos = {
-        es: {
-          titulo: 'Formulario de registro',
-          labelNombre: 'Nombre:',
-          labelApellido: 'Apellido:',
-          labelPago: 'Método de pago:',
-          btnConfirmar: 'Confirmar cita',
-          mensajeError: 'Completa todos los campos obligatorios.'
-        },
-        en: {
-          titulo: 'Registration form',
-          labelNombre: 'First Name:',
-          labelApellido: 'Last Name:',
-          labelPago: 'Payment method:',
-          btnConfirmar: 'Confirm appointment',
-          mensajeError: 'Please fill in all required fields.'
-        }
-      };
-      const t = textos[idioma];
-
-      document.getElementById('titulo').innerText = t.titulo;
-      document.getElementById('labelNombre').innerText = t.labelNombre;
-      document.getElementById('labelApellido').innerText = t.labelApellido;
-      document.getElementById('labelPago').innerText = t.labelPago;
-      document.getElementById('btnConfirmar').innerText = t.btnConfirmar;
+    function getParametro(nombre) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(nombre);
     }
 
-    document.getElementById('formRegistro').addEventListener('submit', (e) => {
-      e.preventDefault();
+    const nombreDiseno = getParametro('diseno') || 'No especificado';
+    const duracion = parseInt(getParametro('duracion')) || 60;
 
-      const nombre = document.getElementById('nombre').value.trim();
-      const apellido = document.getElementById('apellido').value.trim();
-      const pago = document.getElementById('metodoPago').value;
-      const idioma = localStorage.getItem('idioma') || 'es';
+    document.getElementById('nombreDiseno').textContent = nombreDiseno;
+    document.getElementById('duracionDiseno').textContent = duracion;
 
-      const textosError = {
-        es: 'Completa todos los campos obligatorios.',
-        en: 'Please fill in all required fields.'
-      };
+    const calendarioDiv = document.getElementById('calendario');
+    const horariosDiv = document.getElementById('horarios');
+    const btnRegistrar = document.getElementById('btnRegistrar');
+    const mensaje = document.getElementById('mensaje');
 
-      if (!nombre || !apellido || !pago) {
-        alert(textosError[idioma]);
+    const horariosDisponibles = [];
+    for (let h = 10; h < 18; h++) {
+      horariosDisponibles.push(`${h}:00`);
+    }
+
+    let citasGuardadas = JSON.parse(localStorage.getItem('citasAgendadas') || '[]');
+
+    function estaDisponible(fecha, hora, duracion) {
+      const [h, m] = hora.split(':').map(Number);
+      const inicio = h * 60 + m;
+      const fin = inicio + duracion;
+
+      for (const cita of citasGuardadas) {
+        if (cita.fecha !== fecha) continue;
+        const [ch, cm] = cita.hora.split(':').map(Number);
+        const cInicio = ch * 60 + cm;
+        const cFin = cInicio + cita.duracion;
+
+        if (!(fin <= cInicio || inicio >= cFin)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    const hoy = new Date();
+    let diasCalendario = [];
+
+    for (let i = 3; i < 17; i++) {
+      const dia = new Date(hoy);
+      dia.setDate(hoy.getDate() + i);
+      diasCalendario.push(dia);
+    }
+
+    let fechaSeleccionada = null;
+    let horaSeleccionada = null;
+
+    function renderCalendario() {
+      calendarioDiv.innerHTML = '';
+      diasCalendario.forEach(dia => {
+        const diaStr = dia.toISOString().split('T')[0];
+        const diaNum = dia.getDate();
+        const diaNombre = dia.toLocaleDateString(undefined, { weekday: 'short' });
+
+        const div = document.createElement('div');
+        div.className = 'dia';
+        div.textContent = `${diaNombre} ${diaNum}`;
+        div.dataset.fecha = diaStr;
+
+        div.addEventListener('click', () => {
+          if (fechaSeleccionada === diaStr) {
+            fechaSeleccionada = null;
+            div.classList.remove('seleccionado');
+            horariosDiv.innerHTML = '';
+            btnRegistrar.disabled = true;
+            btnRegistrar.classList.remove('enabled');
+            return;
+          }
+          document.querySelectorAll('.dia.seleccionado').forEach(el => el.classList.remove('seleccionado'));
+          fechaSeleccionada = diaStr;
+          div.classList.add('seleccionado');
+          renderHorarios();
+        });
+
+        calendarioDiv.appendChild(div);
+      });
+
+      horariosDiv.innerHTML = ''; // Oculta horarios al cargar
+    }
+
+    function renderHorarios() {
+      horariosDiv.innerHTML = '';
+      horaSeleccionada = null;
+      btnRegistrar.disabled = true;
+      btnRegistrar.classList.remove('enabled');
+      mensaje.textContent = '';
+
+      horariosDisponibles.forEach(hora => {
+        const div = document.createElement('div');
+        div.className = 'hora';
+
+        if (!estaDisponible(fechaSeleccionada, hora, duracion)) {
+          div.classList.add('no-disponible');
+          div.textContent = `${hora} (No disponible)`;
+        } else {
+          div.textContent = hora;
+          div.addEventListener('click', () => {
+            document.querySelectorAll('.hora.seleccionada').forEach(el => el.classList.remove('seleccionada'));
+            div.classList.add('seleccionada');
+            horaSeleccionada = hora;
+            btnRegistrar.disabled = false;
+            btnRegistrar.classList.add('enabled');
+            mensaje.textContent = '';
+          });
+        }
+
+        horariosDiv.appendChild(div);
+      });
+    }
+
+    btnRegistrar.addEventListener('click', () => {
+      if (!fechaSeleccionada || !horaSeleccionada) {
+        mensaje.textContent = 'Selecciona fecha y hora primero.';
         return;
       }
 
-      const fecha = localStorage.getItem('fechaSeleccionada');
-      const hora = localStorage.getItem('horaSeleccionada');
-      const diseno = localStorage.getItem('disenoSeleccionado') || 'Diseño desconocido';
-      const duracion = localStorage.getItem('duracion') || '60';
+      citasGuardadas.push({
+        fecha: fechaSeleccionada,
+        hora: horaSeleccionada,
+        duracion: duracion,
+        diseno: nombreDiseno
+      });
 
-      if (!fecha || !hora) {
-        alert('Error: falta fecha u hora seleccionada.');
-        return;
-      }
+      localStorage.setItem('citasAgendadas', JSON.stringify(citasGuardadas));
 
-      // Guardar cita en localStorage
-      let citas = JSON.parse(localStorage.getItem('citas')) || [];
-
-      // Verificar que no exista ya la cita para ese horario
-      const existe = citas.some(c => c.fecha === fecha && c.hora === hora);
-
-      if (existe) {
-        alert(idioma === 'es' ? 'El horario seleccionado ya está ocupado.' : 'Selected time is already taken.');
-        return;
-      }
-
-      const cita = {
-        fecha,
-        hora,
-        nombre: nombre + ' ' + apellido,
-        pago,
-        diseno,
-        duracion
-      };
-
-      citas.push(cita);
-      localStorage.setItem('citas', JSON.stringify(citas));
-
-      // Guardar nombre para permitir cancelar después
-      localStorage.setItem('nombreCliente', nombre + ' ' + apellido);
-
-      // Enviar WhatsApp a la dueña
-      const mensaje = encodeURIComponent(
-        `Nueva cita de ${cita.nombre} para ${cita.diseno} el día ${cita.fecha} a las ${cita.hora}. Método de pago: ${cita.pago}.`
-      );
-      window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, '_blank');
-
-      // Redirigir a página de agradecimiento con nombre para personalizar
-      window.location.href = `agradecimiento.html?nombre=${encodeURIComponent(nombre)}`;
+      const url = `registro.html?fecha=${fechaSeleccionada}&hora=${horaSeleccionada}&diseno=${encodeURIComponent(nombreDiseno)}&duracion=${duracion}`;
+      window.location.href = url;
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!localStorage.getItem('idioma')) {
-        localStorage.setItem('idioma', 'es');
-      }
-      aplicarIdioma();
-    });
+    renderCalendario();
   </script>
 </body>
 </html>
