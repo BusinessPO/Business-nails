@@ -78,33 +78,86 @@
 
   <h1>Business Nails</h1>
 
-  <button onclick="window.location.href='catalogo.html'">Catálogo</button>
-  <button onclick="mostrarInstruccion()">Agendar</button>
-  <button onclick="abrirCancelar()">Cancelar cita</button>
+  <button id="btnCatalogo">Catálogo</button>
+  <button id="btnAgendar">Agendar</button>
+  <button id="btnCancelar">Cancelar cita</button>
 
-  <!-- Modal para cancelar cita -->
+  <!-- Modal Cancelar -->
   <div id="cancelarModal">
     <div id="cancelarContenido">
       <span class="cerrar" onclick="cerrarCancelar()">✖</span>
-      <h3>Cancelar Cita</h3>
-      <label>Nombre:</label>
+      <h3 id="cancelarTitulo">Cancelar Cita</h3>
+      <label id="labelNombre">Nombre:</label>
       <input type="text" id="nombreCancelar" placeholder="Tu nombre">
-      <label>Fecha de la cita (AAAA-MM-DD):</label>
+      <label id="labelFecha">Fecha de la cita (AAAA-MM-DD):</label>
       <input type="date" id="fechaCancelar">
-      <button onclick="cancelarCita()">Confirmar Cancelación</button>
+      <button onclick="cancelarCita()" id="btnConfirmarCancelacion">Confirmar Cancelación</button>
       <div id="cancelarMensaje"></div>
     </div>
   </div>
 
   <script>
-    // Idioma (opcional para desarrollo)
-    document.getElementById("idiomaSelect").addEventListener("change", function () {
-      alert("Funcionalidad de idioma aún en desarrollo para este demo.");
+    const textos = {
+      es: {
+        catalogo: "Catálogo",
+        agendar: "Agendar",
+        cancelar: "Cancelar cita",
+        instruccion: "Para agendar primero selecciona un diseño en el Catálogo, luego presiona 'Agendar'.",
+        cancelarTitulo: "Cancelar Cita",
+        labelNombre: "Nombre:",
+        labelFecha: "Fecha de la cita (AAAA-MM-DD):",
+        confirmarCancelacion: "Confirmar Cancelación",
+        camposIncompletos: "Por favor completa todos los campos.",
+        muyTarde: "Solo puedes cancelar citas con al menos 2 días de anticipación.",
+        citaCancelada: "Cita cancelada exitosamente.",
+        noEncontrada: "No se encontró una cita con ese nombre y fecha."
+      },
+      en: {
+        catalogo: "Catalog",
+        agendar: "Schedule",
+        cancelar: "Cancel Appointment",
+        instruccion: "To schedule, first choose a design in the Catalog, then click 'Schedule'.",
+        cancelarTitulo: "Cancel Appointment",
+        labelNombre: "Name:",
+        labelFecha: "Appointment date (YYYY-MM-DD):",
+        confirmarCancelacion: "Confirm Cancellation",
+        camposIncompletos: "Please fill in all fields.",
+        muyTarde: "You can only cancel appointments at least 2 days in advance.",
+        citaCancelada: "Appointment successfully cancelled.",
+        noEncontrada: "No appointment found with that name and date."
+      }
+    };
+
+    let idiomaActual = localStorage.getItem("idioma") || "es";
+    const idiomaSelect = document.getElementById("idiomaSelect");
+    idiomaSelect.value = idiomaActual;
+
+    function aplicarIdioma() {
+      const t = textos[idiomaActual];
+      document.getElementById("btnCatalogo").textContent = t.catalogo;
+      document.getElementById("btnAgendar").textContent = t.agendar;
+      document.getElementById("btnCancelar").textContent = t.cancelar;
+      document.getElementById("cancelarTitulo").textContent = t.cancelarTitulo;
+      document.getElementById("labelNombre").textContent = t.labelNombre;
+      document.getElementById("labelFecha").textContent = t.labelFecha;
+      document.getElementById("btnConfirmarCancelacion").textContent = t.confirmarCancelacion;
+    }
+
+    idiomaSelect.addEventListener("change", function () {
+      idiomaActual = idiomaSelect.value;
+      localStorage.setItem("idioma", idiomaActual);
+      aplicarIdioma();
     });
 
-    function mostrarInstruccion() {
-      alert("Para agendar primero selecciona un diseño en el Catálogo, luego presiona 'Agendar'.");
-    }
+    aplicarIdioma();
+
+    document.getElementById("btnCatalogo").onclick = () => window.location.href = "catalogo.html";
+
+    document.getElementById("btnAgendar").onclick = () => {
+      alert(textos[idiomaActual].instruccion);
+    };
+
+    document.getElementById("btnCancelar").onclick = abrirCancelar;
 
     function abrirCancelar() {
       document.getElementById("cancelarModal").style.display = "flex";
@@ -121,9 +174,10 @@
       const nombre = document.getElementById("nombreCancelar").value.trim().toLowerCase();
       const fecha = document.getElementById("fechaCancelar").value;
       const mensajeDiv = document.getElementById("cancelarMensaje");
+      const t = textos[idiomaActual];
 
       if (!nombre || !fecha) {
-        mensajeDiv.innerText = "Por favor completa todos los campos.";
+        mensajeDiv.innerText = t.camposIncompletos;
         mensajeDiv.style.color = "red";
         return;
       }
@@ -133,7 +187,7 @@
       const diff = (fechaCita - hoy) / (1000 * 60 * 60 * 24);
 
       if (diff < 2) {
-        mensajeDiv.innerText = "Solo puedes cancelar citas con al menos 2 días de anticipación.";
+        mensajeDiv.innerText = t.muyTarde;
         mensajeDiv.style.color = "red";
         return;
       }
@@ -148,18 +202,16 @@
         citas.splice(index, 1);
         localStorage.setItem("citasAgendadas", JSON.stringify(citas));
 
-        mensajeDiv.innerText = "Cita cancelada exitosamente.";
+        mensajeDiv.innerText = t.citaCancelada;
         mensajeDiv.style.color = "green";
 
-        // WhatsApp de la dueña
-        const mensaje = `❌ Cancelación de cita:\n👤 Cliente: ${cita.nombre || nombre}\n📅 Fecha: ${cita.fecha}\n💅 Diseño: ${cita.diseno || 'No especificado'}`;
-        const numero = "523338093018"; // Coloca el número real
+        const numero = "523338093018"; // WhatsApp de la dueña
+        const mensaje = `❌ ${t.cancelarTitulo}:\n👤 Cliente: ${cita.nombre || nombre}\n📅 Fecha: ${cita.fecha}\n💅 Diseño: ${cita.diseno || "No especificado"}`;
         const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
         console.log("WhatsApp cancelación:", link);
-        // window.open(link, "_blank"); // <-- Descomenta si deseas que se abra automáticamente
+        // window.open(link, "_blank"); // Descomenta para enviar
       } else {
-        mensajeDiv.innerText = "No se encontró una cita con ese nombre y fecha.";
+        mensajeDiv.innerText = t.noEncontrada;
         mensajeDiv.style.color = "red";
       }
     }
