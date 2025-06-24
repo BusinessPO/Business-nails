@@ -99,26 +99,50 @@
       const pago = document.getElementById("pago").value;
 
       if (!nombre || !apellido || !pago) {
-        alert("Por favor completa todos los campos.");
+        alert("Por favor, completa todos los campos.");
         return;
       }
 
       const nuevaCita = {
-        nombre: nombre + " " + apellido,
         fecha: cita.fecha,
         hora: cita.hora,
-        metodo: pago
+        nombre,
+        apellido,
+        pago
       };
 
+      // Guardar permanentemente
       const citas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
+
+      // Validar que no exista la cita ocupada (evitar duplicados)
+      const existe = citas.some(c => c.fecha === nuevaCita.fecha && c.hora === nuevaCita.hora);
+      if (existe) {
+        alert("Ese horario ya está reservado. Por favor, elige otro.");
+        window.location.href = "agendar.html";
+        return;
+      }
+
       citas.push(nuevaCita);
       localStorage.setItem("citasAgendadas", JSON.stringify(citas));
 
-      const mensaje = `Nueva cita agendada:%0ANombre: ${nuevaCita.nombre}%0AFecha: ${nuevaCita.fecha}%0AHora: ${nuevaCita.hora}%0APago: ${nuevaCita.metodo}`;
-      const numero = "52XXXXXXXXXX"; // Reemplaza con el número real
-      window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
+      // Enviar WhatsApp (abre en nueva pestaña)
+      const mensaje = encodeURIComponent(
+        `Nueva cita reservada:\n` +
+        `Fecha: ${nuevaCita.fecha}\n` +
+        `Hora: ${nuevaCita.hora}\n` +
+        `Nombre: ${nuevaCita.nombre} ${nuevaCita.apellido}\n` +
+        `Pago: ${nuevaCita.pago}`
+      );
+      const telefonoDueña = "523338093018"; // Cambia aquí al número de la dueña con código país sin signos ni espacios
+      window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, "_blank");
 
-      localStorage.setItem("clienteNombre", nombre);
+      // Limpiar selección temporal
+      localStorage.removeItem("citaSeleccionada");
+
+      // Guardar nombre para página agradecimiento
+      localStorage.setItem("nombreCliente", nombre);
+
+      // Redirigir a agradecimiento
       window.location.href = "agradecimiento.html";
     }
   </script>
