@@ -111,11 +111,15 @@
       }
     };
 
-    let idiomaActual = "es";
+    // Tomar idioma guardado en localStorage o español por defecto
+    let idiomaActual = localStorage.getItem("idiomaSeleccionado") || "es";
 
     const listaDisenos = document.getElementById("listaDisenos");
     const titulo = document.getElementById("titulo");
     const selectorIdioma = document.getElementById("selector-idioma");
+
+    // Sincronizar el selector con el idioma actual
+    selectorIdioma.value = idiomaActual;
 
     function cargarCatalogo() {
       listaDisenos.innerHTML = "";
@@ -128,7 +132,7 @@
         div.innerHTML = `
           <h2>${diseno.nombre}</h2>
           <p>${diseno.descripcion}</p>
-          <p><strong>${diseno.costo}</strong> - ${diseno.duracion} ${idiomaActual === "es" ? "minutos" : "minutes"}</p>
+          <p><strong>${diseno.costo}</strong> - ${idiomaActual === "es" ? "minutos" : "minutes"}</p>
           <a href="agendar.html?diseno=${encodeURIComponent(diseno.nombre)}&duracion=${diseno.duracion}" class="boton-registrar">
             ${idiomaActual === "es" ? "Registrar cita" : "Schedule Appointment"}
           </a>
@@ -140,6 +144,7 @@
 
     selectorIdioma.addEventListener("change", (e) => {
       idiomaActual = e.target.value;
+      localStorage.setItem("idiomaSeleccionado", idiomaActual);
       cargarCatalogo();
     });
 
