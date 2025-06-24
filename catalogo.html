@@ -2,261 +2,222 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agendar cita - Título</title>
+  <title>Catálogo - Diseño y Aplicación de Uñas</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff0f5;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      text-align: center;
+      background: #fafafa;
     }
     h1 {
-      color: #d36ba0;
-      margin-bottom: 10px;
+      text-align: center;
     }
-    #infoDiseno {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #444;
-    }
-    select, button {
-      font-size: 16px;
-      padding: 10px;
+    .diseno {
+      background: #fff;
+      border: 1px solid #ddd;
       margin: 10px auto;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      width: 80%;
-      max-width: 300px;
-      display: block;
+      padding: 15px;
+      max-width: 600px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: box-shadow 0.3s;
     }
-    select#hora option {
-      color: green;
+    .diseno:hover {
+      box-shadow: 0 0 10px #aaa;
     }
-    select#hora option:disabled {
-      color: gray;
-      background-color: #eee;
-    }
-    button {
-      background-color: #d36ba0;
+    .boton-fechas {
+      margin-top: 10px;
+      background-color: #007bff;
       color: white;
       border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 1rem;
     }
-    button:hover {
-      background-color: #b7598d;
+    .boton-fechas:hover {
+      background-color: #0056b3;
     }
-    .idioma-select {
-      margin-top: 20px;
+    #aviso {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #007bff;
+      padding: 20px;
+      z-index: 1000;
+      max-width: 300px;
+      text-align: center;
+      border-radius: 10px;
+    }
+    #aviso button {
+      margin-top: 15px;
+      background-color: #28a745;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    #aviso button:hover {
+      background-color: #19692c;
+    }
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+    }
+    #selector-idioma {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 5px;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1 id="titulo">Agendar cita</h1>
+  <select id="selector-idioma">
+    <option value="es">Español Latino</option>
+    <option value="en">English</option>
+  </select>
 
-  <div id="infoDiseno">Cargando diseño seleccionado...</div>
+  <h1 id="titulo">Catálogo de Diseños de Uñas</h1>
 
-  <label for="fecha" id="labelFecha">Selecciona fecha:</label>
-  <select id="fecha"></select>
+  <div id="listaDisenos">
+    <!-- Aquí se cargarán los diseños -->
+  </div>
 
-  <label for="hora" id="labelHora">Selecciona hora:</label>
-  <select id="hora"></select>
-
-  <button id="btnRegistrar">Registrar cita</button>
-
-  <div class="idioma-select">
-    <label for="idioma">🌐 Cambiar idioma:</label>
-    <select id="idioma">
-      <option value="es">Español latino</option>
-      <option value="en">English</option>
-    </select>
+  <div id="overlay"></div>
+  <div id="aviso">
+    <div id="mensajeAviso"></div>
+    <button id="btnRegistrarCita">Ver fechas y horarios disponibles</button>
   </div>
 
   <script>
-    // Mostrar diseño y duración
-    function mostrarDiseno() {
-      const diseno = localStorage.getItem('disenoSeleccionado') || 'Sin diseño';
-      const duracion = localStorage.getItem('duracion') || '60';
-      const idioma = localStorage.getItem('idioma') || 'es';
-
-      const textos = {
-        es: `Diseño: ${diseno} (Duración: ${duracion} minutos)`,
-        en: `Design: ${diseno} (Duration: ${duracion} minutes)`
-      };
-      document.getElementById('infoDiseno').innerText = textos[idioma];
-    }
-
-    // Cargar fechas próximas 14 días
-    function cargarFechas() {
-      const selectFecha = document.getElementById('fecha');
-      const hoy = new Date();
-      selectFecha.innerHTML = '';
-      for (let i = 0; i < 14; i++) {
-        const dia = new Date(hoy);
-        dia.setDate(hoy.getDate() + i);
-        const opcion = document.createElement('option');
-        opcion.value = dia.toISOString().slice(0,10);
-        opcion.textContent = dia.toLocaleDateString('es-MX', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'short'
-        });
-        selectFecha.appendChild(opcion);
-      }
-      selectFecha.value = new Date().toISOString().slice(0,10);
-    }
-
-    // Cargar horas de 10 a 18
-    function cargarHoras() {
-      const selectHora = document.getElementById('hora');
-      selectHora.innerHTML = '';
-      for (let h = 10; h <= 18; h++) {
-        const horaStr = h.toString().padStart(2,'0') + ':00';
-        const opcion = document.createElement('option');
-        opcion.value = horaStr;
-        opcion.textContent = horaStr;
-        selectHora.appendChild(opcion);
-      }
-    }
-
-    // Bloquear horas ocupadas y mostrar en gris
-    function bloquearHorasOcupadas() {
-      const citas = JSON.parse(localStorage.getItem("citas")) || [];
-      const fechaSeleccionada = document.getElementById("fecha").value;
-      const duracionNueva = parseInt(localStorage.getItem("duracion")) || 60;
-
-      const selectHora = document.getElementById("hora");
-      selectHora.innerHTML = "";
-
-      for (let h = 10; h <= 18; h++) {
-        const horaStr = h.toString().padStart(2, '0') + ":00";
-
-        let ocupada = false;
-
-        for (const cita of citas) {
-          if (cita.fecha === fechaSeleccionada) {
-            const horaCita = parseInt(cita.hora.split(":")[0]);
-            const duracionCita = parseInt(cita.duracion);
-
-            const inicio = horaCita;
-            const fin = horaCita + Math.ceil(duracionCita / 60);
-            const nuevaFin = h + Math.ceil(duracionNueva / 60);
-
-            if ((h >= inicio && h < fin) || (inicio >= h && inicio < nuevaFin)) {
-              ocupada = true;
-              break;
-            }
+    const textos = {
+      es: {
+        titulo: "Catálogo de Diseños de Uñas",
+        aviso: "Para agendar, selecciona 'Ver fechas y horarios disponibles'.",
+        btnRegistrar: "Ver fechas y horarios disponibles",
+        diseños: [
+          {
+            nombre: "Manicura Francesa",
+            descripcion: "Clásico y elegante estilo francés.",
+            costo: "$300",
+            duracion: 60
+          },
+          {
+            nombre: "Uñas Decoradas",
+            descripcion: "Diseños artísticos personalizados.",
+            costo: "$450",
+            duracion: 90
+          },
+          {
+            nombre: "Manicura Básica",
+            descripcion: "Limpieza y cuidado básico de uñas.",
+            costo: "$200",
+            duracion: 45
           }
-        }
-
-        const opcion = document.createElement("option");
-        opcion.value = horaStr;
-        opcion.textContent = horaStr;
-
-        if (ocupada) {
-          opcion.disabled = true;
-          opcion.style.color = "gray";
-          opcion.style.backgroundColor = "#eee";
-        } else {
-          opcion.style.color = "green";
-        }
-
-        selectHora.appendChild(opcion);
+        ]
+      },
+      en: {
+        titulo: "Nail Design Catalog",
+        aviso: "To schedule, click 'See available dates and times'.",
+        btnRegistrar: "See available dates and times",
+        diseños: [
+          {
+            nombre: "French Manicure",
+            descripcion: "Classic and elegant French style.",
+            costo: "$15",
+            duracion: 60
+          },
+          {
+            nombre: "Decorated Nails",
+            descripcion: "Custom artistic designs.",
+            costo: "$22",
+            duracion: 90
+          },
+          {
+            nombre: "Basic Manicure",
+            descripcion: "Basic nail care and cleaning.",
+            costo: "$10",
+            duracion: 45
+          }
+        ]
       }
+    };
+
+    let idiomaActual = "es";
+
+    const listaDisenos = document.getElementById("listaDisenos");
+    const titulo = document.getElementById("titulo");
+    const aviso = document.getElementById("aviso");
+    const mensajeAviso = document.getElementById("mensajeAviso");
+    const btnRegistrarCita = document.getElementById("btnRegistrarCita");
+    const overlay = document.getElementById("overlay");
+    const selectorIdioma = document.getElementById("selector-idioma");
+
+    function cargarCatalogo() {
+      listaDisenos.innerHTML = "";
+      titulo.textContent = textos[idiomaActual].titulo;
+
+      textos[idiomaActual].diseños.forEach((diseno, index) => {
+        const div = document.createElement("div");
+        div.className = "diseno";
+        div.dataset.index = index;
+
+        div.innerHTML = `
+          <h2>${diseno.nombre}</h2>
+          <p>${diseno.descripcion}</p>
+          <p><strong>${diseno.costo}</strong> - ${diseno.duracion} ${idiomaActual === "es" ? "minutos" : "minutes"}</p>
+          <button class="boton-fechas">${idiomaActual === "es" ? "Registrar cita" : "Schedule Appointment"}</button>
+        `;
+
+        div.querySelector("button").addEventListener("click", () => {
+          mostrarAviso(index);
+        });
+
+        listaDisenos.appendChild(div);
+      });
     }
 
-    // Cambiar idioma dinámicamente
-    function aplicarIdioma() {
-      const idioma = localStorage.getItem('idioma') || 'es';
+    function mostrarAviso(index) {
+      const diseno = textos[idiomaActual].diseños[index];
+      mensajeAviso.textContent = `${textos[idiomaActual].aviso}`;
+      btnRegistrarCita.textContent = textos[idiomaActual].btnRegistrar;
 
-      const textos = {
-        es: {
-          titulo: 'Agendar cita',
-          labelFecha: 'Selecciona fecha:',
-          labelHora: 'Selecciona hora:',
-          btnRegistrar: 'Registrar cita',
-          avisoSeleccion: 'Por favor selecciona fecha y hora.',
-          registroExito: 'Cita registrada con éxito.',
-          alertaNombre: 'Por favor ingresa tu nombre y apellido.',
-          formularioTitulo: 'Formulario de registro',
-          campoNombre: 'Nombre',
-          campoApellido: 'Apellido',
-          campoPago: 'Método de pago',
-          btnConfirmar: 'Confirmar cita',
-          mensajeError: 'Completa todos los campos obligatorios.'
-        },
-        en: {
-          titulo: 'Schedule Appointment',
-          labelFecha: 'Select date:',
-          labelHora: 'Select time:',
-          btnRegistrar: 'Register appointment',
-          avisoSeleccion: 'Please select date and time.',
-          registroExito: 'Appointment successfully registered.',
-          alertaNombre: 'Please enter your first and last name.',
-          formularioTitulo: 'Registration form',
-          campoNombre: 'First Name',
-          campoApellido: 'Last Name',
-          campoPago: 'Payment method',
-          btnConfirmar: 'Confirm appointment',
-          mensajeError: 'Please fill in all required fields.'
-        }
+      overlay.style.display = "block";
+      aviso.style.display = "block";
+
+      btnRegistrarCita.onclick = () => {
+        // Aquí puedes guardar datos del diseño si quieres, pasando por URL
+        // Por ejemplo: registro.html?diseno=Manicura+Francesa&duracion=60
+        const url = `registro.html?diseno=${encodeURIComponent(diseno.nombre)}&duracion=${diseno.duracion}`;
+        window.location.href = url;
       };
-
-      const t = textos[idioma];
-
-      document.getElementById('titulo').innerText = t.titulo;
-      document.getElementById('labelFecha').innerText = t.labelFecha;
-      document.getElementById('labelHora').innerText = t.labelHora;
-      document.getElementById('btnRegistrar').innerText = t.btnRegistrar;
     }
 
-    // Guardar idioma cuando cambia selector
-    document.getElementById('idioma').addEventListener('change', (e) => {
-      localStorage.setItem('idioma', e.target.value);
-      aplicarIdioma();
-      mostrarDiseno();
+    function ocultarAviso() {
+      aviso.style.display = "none";
+      overlay.style.display = "none";
+    }
+
+    overlay.addEventListener("click", ocultarAviso);
+
+    selectorIdioma.addEventListener("change", (e) => {
+      idiomaActual = e.target.value;
+      cargarCatalogo();
     });
 
-    // Registrar cita (pasa a formulario)
-    document.getElementById('btnRegistrar').addEventListener('click', () => {
-      const fecha = document.getElementById('fecha').value;
-      const hora = document.getElementById('hora').value;
-      const idioma = localStorage.getItem('idioma') || 'es';
-
-      const textos = {
-        es: 'Por favor selecciona fecha y hora.',
-        en: 'Please select date and time.'
-      };
-
-      if (!fecha || !hora) {
-        alert(textos[idioma]);
-        return;
-      }
-
-      // Guardamos fecha y hora seleccionadas para usar en el formulario
-      localStorage.setItem('fechaSeleccionada', fecha);
-      localStorage.setItem('horaSeleccionada', hora);
-
-      // Ir al formulario de registro (registro.html)
-      window.location.href = 'registro.html';
-    });
-
-    // Cuando cambia la fecha, actualizar horarios
-    document.getElementById('fecha').addEventListener('change', bloquearHorasOcupadas);
-
-    // Inicializar todo
-    function init() {
-      if (!localStorage.getItem('idioma')) {
-        localStorage.setItem('idioma', 'es');
-      }
-      aplicarIdioma();
-      mostrarDiseno();
-      cargarFechas();
-      cargarHoras();
-      bloquearHorasOcupadas();
-    }
-
-    init();
+    // Carga inicial
+    cargarCatalogo();
   </script>
 </body>
 </html>
