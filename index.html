@@ -36,7 +36,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    input {
+    input, select {
       padding: 10px;
       width: 250px;
       margin: 10px 0;
@@ -59,6 +59,18 @@
     <input type="text" id="nombreCancelar" placeholder="Nombre registrado" required /><br>
     <input type="text" id="apellidoCancelar" placeholder="Apellido registrado" required /><br>
     <input type="date" id="fechaCancelar" required /><br>
+    <select id="horaCancelar" required>
+      <option value="">Selecciona horario</option>
+      <option>10:00</option>
+      <option>11:00</option>
+      <option>12:00</option>
+      <option>13:00</option>
+      <option>14:00</option>
+      <option>15:00</option>
+      <option>16:00</option>
+      <option>17:00</option>
+      <option>18:00</option>
+    </select><br>
     <button type="submit" class="boton">Cancelar cita</button>
   </form>
 </div>
@@ -72,12 +84,19 @@
     const nombre = document.getElementById("nombreCancelar").value.trim().toLowerCase();
     const apellido = document.getElementById("apellidoCancelar").value.trim().toLowerCase();
     const fecha = document.getElementById("fechaCancelar").value;
+    const hora = document.getElementById("horaCancelar").value;
+
+    if (!hora) {
+      alert("Por favor selecciona un horario.");
+      return;
+    }
 
     let citas = JSON.parse(localStorage.getItem("citasConfirmadas") || "[]");
     const index = citas.findIndex(cita => 
       cita.nombre.toLowerCase() === nombre &&
       cita.apellido.toLowerCase() === apellido &&
-      cita.fecha === fecha
+      cita.fecha === fecha &&
+      cita.hora === hora
     );
 
     if (index === -1) {
@@ -86,7 +105,7 @@
     }
 
     const hoy = new Date();
-    const fechaCita = new Date(fecha);
+    const fechaCita = new Date(fecha + "T00:00");
     const diferenciaDias = Math.floor((fechaCita - hoy) / (1000 * 60 * 60 * 24));
 
     if (diferenciaDias < 2) {
@@ -98,7 +117,7 @@
     localStorage.setItem("citasConfirmadas", JSON.stringify(citas));
     alert("Tu cita ha sido cancelada.");
 
-    // Enviar mensaje por WhatsApp
+    // WhatsApp (reemplaza el número con el real)
     const mensaje = `🚫 CANCELACIÓN DE CITA\nNombre: ${citaCancelada.nombre} ${citaCancelada.apellido}\nFecha: ${citaCancelada.fecha}\nHora: ${citaCancelada.hora}`;
     const whatsapp = "https://wa.me/523338093018?text=" + encodeURIComponent(mensaje);
     window.open(whatsapp, "_blank");
