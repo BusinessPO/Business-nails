@@ -2,125 +2,111 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Inicio - Business Nails</title>
+  <title>Registro de cita</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       text-align: center;
-      background: #f8f8f8;
+      background: #f0f0f0;
     }
-    h1 {
-      color: #ff1493;
+    .contenedor {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      display: inline-block;
+    }
+    input, select {
+      margin: 10px 0;
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     .boton {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 24px;
+      margin-top: 15px;
+      padding: 12px 30px;
       font-size: 16px;
       border: none;
-      border-radius: 10px;
       background-color: #ff69b4;
       color: white;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
     .boton:hover {
       background-color: #ff1493;
-    }
-    .form-cancelar {
-      margin-top: 30px;
-      background: white;
-      padding: 20px;
-      display: inline-block;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    input, select {
-      padding: 10px;
-      width: 250px;
-      margin: 10px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
 
-<h1>Business Nails</h1>
+<div class="contenedor">
+  <h2>¿Confirmar cita?</h2>
+  <p id="infoCita"></p>
+  <p><strong>IMPORTANTE: Tu cita se registrará solo si al presionar el botón de confirmar envías el WhatsApp predeterminado, si no lo envías no se te podrá atender.</strong></p>
+  <p>En caso de querer cancelar tu cita, podrás hacerlo desde la página de inicio con al menos 2 días de anticipación. Gracias</p>
 
-<button class="boton" onclick="window.location.href='catalogo.html'">Catálogo</button>
-<button class="boton" onclick="alert('Para agendar primero selecciona un diseño en el catálogo y luego regresa aquí a agendar.')">Agendar</button>
-
-<!-- Formulario para cancelar cita -->
-<div class="form-cancelar">
-  <h2>Cancelar cita</h2>
-  <form id="formCancelar">
-    <input type="text" id="nombreCancelar" placeholder="Nombre registrado" required /><br>
-    <input type="text" id="apellidoCancelar" placeholder="Apellido registrado" required /><br>
-    <input type="date" id="fechaCancelar" required /><br>
-    <select id="horaCancelar" required>
-      <option value="">Selecciona horario</option>
-      <option>10:00</option>
-      <option>11:00</option>
-      <option>12:00</option>
-      <option>13:00</option>
-      <option>14:00</option>
-      <option>15:00</option>
-      <option>16:00</option>
-      <option>17:00</option>
-      <option>18:00</option>
+  <form id="formRegistro">
+    <input type="text" id="nombre" placeholder="Nombre" required /><br>
+    <input type="text" id="apellido" placeholder="Apellido" required /><br>
+    <select id="pago" required>
+      <option value="">Método de pago</option>
+      <option>Efectivo</option>
+      <option>Transferencia</option>
+      <option>Otro</option>
     </select><br>
-    <button type="submit" class="boton">Cancelar cita</button>
+    <button type="submit" class="boton">Confirmar cita</button>
   </form>
 </div>
 
 <script>
-  const formCancelar = document.getElementById("formCancelar");
+  const cita = JSON.parse(localStorage.getItem("citaSeleccionada"));
+  const info = document.getElementById("infoCita");
 
-  formCancelar.addEventListener("submit", function(e) {
+  if (!cita) {
+    info.textContent = "No se ha seleccionado ninguna cita.";
+    document.getElementById("formRegistro").style.display = "none";
+  } else {
+    info.textContent = `Fecha: ${cita.fecha} | Hora: ${cita.hora}`;
+  }
+
+  document.getElementById("formRegistro").addEventListener("submit", function(e) {
     e.preventDefault();
 
-    const nombre = document.getElementById("nombreCancelar").value.trim().toLowerCase();
-    const apellido = document.getElementById("apellidoCancelar").value.trim().toLowerCase();
-    const fecha = document.getElementById("fechaCancelar").value;
-    const hora = document.getElementById("horaCancelar").value;
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const pago = document.getElementById("pago").value;
 
-    if (!hora) {
-      alert("Por favor selecciona un horario.");
-      return;
-    }
+    if (!cita) return;
+
+    const nuevaCita = {
+      nombre,
+      apellido,
+      fecha: cita.fecha,
+      hora: cita.hora,
+      metodoPago: pago
+    };
 
     let citas = JSON.parse(localStorage.getItem("citasConfirmadas") || "[]");
-    const index = citas.findIndex(cita => 
-      cita.nombre.toLowerCase() === nombre &&
-      cita.apellido.toLowerCase() === apellido &&
-      cita.fecha === fecha &&
-      cita.hora === hora
-    );
-
-    if (index === -1) {
-      alert("No se encontró una cita confirmada con esos datos.");
-      return;
-    }
-
-    const hoy = new Date();
-    const fechaCita = new Date(fecha + "T00:00");
-    const diferenciaDias = Math.floor((fechaCita - hoy) / (1000 * 60 * 60 * 24));
-
-    if (diferenciaDias < 2) {
-      alert("Solo puedes cancelar una cita con al menos 2 días de anticipación.");
-      return;
-    }
-
-    const citaCancelada = citas.splice(index, 1)[0];
+    citas.push(nuevaCita);
     localStorage.setItem("citasConfirmadas", JSON.stringify(citas));
-    alert("Tu cita ha sido cancelada.");
+    localStorage.removeItem("citaSeleccionada");
 
-    // WhatsApp (reemplaza el número con el real)
-    const mensaje = `🚫 CANCELACIÓN DE CITA\nNombre: ${citaCancelada.nombre} ${citaCancelada.apellido}\nFecha: ${citaCancelada.fecha}\nHora: ${citaCancelada.hora}`;
-    const whatsapp = "https://wa.me/52XXXXXXXXXX?text=" + encodeURIComponent(mensaje);
-    window.open(whatsapp, "_blank");
+    // Guardar nombre para agradecimiento
+    localStorage.setItem("nombreCliente", nombre);
+
+    // Enviar mensaje de WhatsApp
+    const mensaje = `📅 NUEVA CITA CONFIRMADA\nNombre: ${nombre} ${apellido}\nFecha: ${cita.fecha}\nHora: ${cita.hora}\nPago: ${pago}`;
+    const numeroWhatsApp = "523338093018"; // ← CAMBIA ESTE NÚMERO
+    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+    
+    window.open(urlWhatsApp, "_blank");
+
+    // Redirigir después de unos segundos
+    setTimeout(() => {
+      window.location.href = "agradecimiento.html";
+    }, 1000);
   });
 </script>
 
