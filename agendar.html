@@ -29,19 +29,20 @@
     border-radius: 6px;
     color: white;
     font-weight: bold;
+    margin: 0 4px;
+    padding: 6px 12px;
+    display: inline-block;
   }
   td.disponible {
-    background-color: #28a745;
+    background-color: #28a745; /* verde */
+  }
+  td.seleccionado {
+    background-color: #007bff; /* azul */
   }
   td.ocupado {
     background-color: gray;
     cursor: not-allowed;
     color: #ccc;
-  }
-  td.no-laboral {
-    background-color: #eee;
-    color: #aaa;
-    cursor: default;
   }
   h1 {
     margin-bottom: 15px;
@@ -73,7 +74,7 @@
     return dia === 0 || dia === 6;
   }
 
-  // Función para formatear fecha dd/mm/aaaa
+  // Función para formatear fecha dd/mm/aaaa con día corto
   function formatearFecha(fecha) {
     return fecha.toLocaleDateString("es-MX", { weekday:"short", day:"numeric", month:"numeric" });
   }
@@ -127,16 +128,24 @@
       } else {
         span.classList.add("disponible");
         span.title = "Horario disponible";
-        span.style.margin = "0 4px";
-        span.style.padding = "6px 12px";
-        span.style.display = "inline-block";
-        span.style.borderRadius = "6px";
-        span.style.cursor = "pointer";
 
         span.addEventListener("click", () => {
-          // Guardar selección temporal y redirigir a registro
+          // Remover clase 'seleccionado' de cualquier otro horario disponible
+          document.querySelectorAll(".seleccionado").forEach(el => {
+            el.classList.remove("seleccionado");
+            el.classList.add("disponible");
+          });
+
+          // Marcar este horario como seleccionado
+          span.classList.remove("disponible");
+          span.classList.add("seleccionado");
+
+          // Guardar selección temporal y redirigir a registro después de un pequeño delay para que se vea el cambio
           localStorage.setItem("citaSeleccionada", JSON.stringify({ fecha: fechaStr, hora }));
-          window.location.href = "registro.html";
+
+          setTimeout(() => {
+            window.location.href = "registro.html";
+          }, 300); // 300ms para que se note el cambio de color
         });
       }
       tdHorarios.appendChild(span);
