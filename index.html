@@ -198,18 +198,10 @@
       );
 
       if (index >= 0) {
-        const cita = citas[index];
         citas.splice(index, 1);
         localStorage.setItem("citasAgendadas", JSON.stringify(citas));
-
         mensajeDiv.innerText = t.citaCancelada;
         mensajeDiv.style.color = "green";
-
-        const numero = "523338093018"; // WhatsApp de la dueña
-        const mensaje = `❌ ${t.cancelarTitulo}:\n👤 Cliente: ${cita.nombre || nombre}\n📅 Fecha: ${cita.fecha}\n💅 Diseño: ${cita.diseno || "No especificado"}`;
-        const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-        console.log("WhatsApp cancelación:", link);
-        // window.open(link, "_blank"); // Descomenta para enviar
       } else {
         mensajeDiv.innerText = t.noEncontrada;
         mensajeDiv.style.color = "red";
