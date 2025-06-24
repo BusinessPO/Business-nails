@@ -1,43 +1,146 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gracias</title>
+  <meta charset="UTF-8">
+  <title>Registro de Cita</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff0f5;
-      text-align: center;
-      padding: 40px;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f8f8f8;
+      max-width: 600px;
+      margin: auto;
     }
     h1 {
-      color: #d36ba0;
+      text-align: center;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      background: #28a745;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+    #mensaje {
+      margin-top: 30px;
+      font-size: 1.2em;
+      text-align: center;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1 id="mensaje"></h1>
+
+  <h1>Registrar tu Cita</h1>
+
+  <div id="infoCita"></div>
+
+  <form id="formulario">
+    <label for="nombre">Nombre *</label>
+    <input type="text" id="nombre" required>
+
+    <label for="apellido">Apellido *</label>
+    <input type="text" id="apellido" required>
+
+    <label for="metodo">Método de pago *</label>
+    <select id="metodo" required>
+      <option value="">Selecciona una opción</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+      <option value="Tarjeta">Tarjeta</option>
+    </select>
+
+    <button type="submit">Confirmar Cita</button>
+  </form>
+
+  <div id="mensaje"></div>
 
   <script>
-    function getQueryParam(param) {
+    function getParametro(nombre) {
       const params = new URLSearchParams(window.location.search);
-      return params.get(param);
+      return params.get(nombre);
     }
 
-    function aplicarIdioma() {
-      const idioma = localStorage.getItem('idioma') || 'es';
+    const fecha = getParametro("fecha");
+    const hora = getParametro("hora");
+    const diseno = getParametro("diseno");
+    const duracion = getParametro("duracion");
 
-      const textos = {
-        es: nombre => `Gracias, ${nombre}, por tu cita. ¡Te esperamos!`,
-        en: nombre => `Thank you, ${nombre}, for your appointment. We look forward to seeing you!`
-      };
+    const infoDiv = document.getElementById("infoCita");
+    infoDiv.innerHTML = `
+      <p><strong>Fecha:</strong> ${fecha}</p>
+      <p><strong>Hora:</strong> ${hora}</p>
+      <p><strong>Diseño:</strong> ${diseno}</p>
+      <p><strong>Duración:</strong> ${duracion} min</p>
+    `;
 
-      const nombre = getQueryParam('nombre') || 'Cliente';
-      document.getElementById('mensaje').innerText = textos[idioma](nombre);
-    }
+    const form = document.getElementById("formulario");
+    const mensajeDiv = document.getElementById("mensaje");
 
-    aplicarIdioma();
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombre").value.trim();
+      const apellido = document.getElementById("apellido").value.trim();
+      const metodo = document.getElementById("metodo").value;
+
+      if (!nombre || !apellido || !metodo) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      const primerNombre = nombre.split(" ")[0];
+
+      // Mostrar mensaje personalizado
+      mensajeDiv.innerHTML = `¡Gracias ${primerNombre}! Tu cita ha sido registrada con éxito.`;
+
+      // Aquí podrías enviar por WhatsApp:
+      const texto = `Nueva cita registrada:
+👤 ${nombre} ${apellido}
+💅 Diseño: ${diseno}
+📅 Fecha: ${fecha}
+🕐 Hora: ${hora}
+⏱️ Duración: ${duracion} min
+💳 Pago: ${metodo}`;
+
+      const telefonoDueña = "523338093018"; // Coloca el número con lada de México sin espacios
+      const linkWhatsApp = `https://wa.me/${telefonoDueña}?text=${encodeURIComponent(texto)}`;
+
+      // Simulación de envío por WhatsApp (puedes redirigir automáticamente si quieres)
+      console.log("Enlace de WhatsApp para la dueña:", linkWhatsApp);
+
+      // También podrías hacer: window.open(linkWhatsApp, "_blank");
+
+      // Guardar la cita final si necesitas (opcional)
+      localStorage.setItem("ultimaCitaConfirmada", JSON.stringify({
+        nombre, apellido, metodo, fecha, hora, diseno, duracion
+      }));
+
+      // Ocultar formulario
+      form.style.display = "none";
+    });
   </script>
 </body>
 </html>
