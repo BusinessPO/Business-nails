@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Inicio - Business Nails</title>
+  <title>Inicio -Rosario's Nails</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -115,7 +115,7 @@
 
     const citaCancelada = citas.splice(index, 1)[0];
     localStorage.setItem("citasConfirmadas", JSON.stringify(citas));
-    alert("Tu cita ha sido cancelada.");
+    alert("Para terminar de cancelar tu cita es necesario que envíes el WhatsApp de cancelación que se te mostrará");
 
     // WhatsApp (reemplaza el número con el real)
     const mensaje = `🚫 CANCELACIÓN DE CITA\nNombre: ${citaCancelada.nombre} ${citaCancelada.apellido}\nFecha: ${citaCancelada.fecha}\nHora: ${citaCancelada.hora}`;
