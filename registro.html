@@ -16,6 +16,7 @@
       border-radius: 10px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
       display: inline-block;
+      max-width: 400px;
     }
     input, select {
       margin: 10px 0;
@@ -23,6 +24,7 @@
       width: 250px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 1rem;
     }
     .boton {
       margin-top: 15px;
@@ -42,10 +44,10 @@
 <body>
 
 <div class="contenedor">
-  <h2>¿Confirmar cita?</h2>
+  <h2 id="titulo">¿Confirmar cita?</h2>
   <p id="infoCita"></p>
-  <p><strong>IMPORTANTE: Tu cita se registrará solo si al presionar el botón de confirmar envías el WhatsApp predeterminado, si no lo envías no se te podrá atender.</strong></p>
-  <p>En caso de querer cancelar tu cita, podrás hacerlo desde la página de inicio con al menos 2 días de anticipación. Gracias</p>
+  <p id="avisoImportante"><strong>IMPORTANTE: Tu cita se registrará solo si al presionar el botón de confirmar envías el WhatsApp predeterminado, si no lo envías no se te podrá atender.</strong></p>
+  <p id="avisoCancelacion">En caso de querer cancelar tu cita, podrás hacerlo desde la página de inicio con al menos 2 días de anticipación. Gracias</p>
 
   <form id="formRegistro">
     <input type="text" id="nombre" placeholder="Nombre" required /><br>
@@ -56,16 +58,59 @@
       <option>Transferencia</option>
       <option>Otro</option>
     </select><br>
-    <button type="submit" class="boton">Confirmar cita</button>
+    <button type="submit" class="boton" id="btnConfirmar">Confirmar cita</button>
   </form>
 </div>
 
 <script>
+  // Obtener idioma guardado o español por defecto
+  const idioma = localStorage.getItem("idiomaSeleccionado") || "es";
+
+  // Textos en español e inglés
+  const textos = {
+    es: {
+      titulo: "¿Confirmar cita?",
+      avisoImportante: "IMPORTANTE: Tu cita se registrará solo si al presionar el botón de confirmar envías el WhatsApp predeterminado, si no lo envías no se te podrá atender.",
+      avisoCancelacion: "En caso de querer cancelar tu cita, podrás hacerlo desde la página de inicio con al menos 2 días de anticipación. Gracias",
+      placeholderNombre: "Nombre",
+      placeholderApellido: "Apellido",
+      metodoPago: "Método de pago",
+      opcionesPago: ["Efectivo", "Transferencia", "Otro"],
+      btnConfirmar: "Confirmar cita",
+      noSeleccion: "No se ha seleccionado ninguna cita."
+    },
+    en: {
+      titulo: "Confirm appointment?",
+      avisoImportante: "IMPORTANT: Your appointment will be registered only if you send the default WhatsApp message after pressing confirm. If not sent, service cannot be provided.",
+      avisoCancelacion: "If you wish to cancel your appointment, you can do it from the home page with at least 2 days notice. Thank you.",
+      placeholderNombre: "First name",
+      placeholderApellido: "Last name",
+      metodoPago: "Payment method",
+      opcionesPago: ["Cash", "Bank transfer", "Other"],
+      btnConfirmar: "Confirm appointment",
+      noSeleccion: "No appointment selected."
+    }
+  };
+
+  // Aplicar textos al cargar
+  const t = textos[idioma];
+
+  document.getElementById("titulo").textContent = t.titulo;
+  document.getElementById("avisoImportante").textContent = t.avisoImportante;
+  document.getElementById("avisoCancelacion").textContent = t.avisoCancelacion;
+  document.getElementById("nombre").placeholder = t.placeholderNombre;
+  document.getElementById("apellido").placeholder = t.placeholderApellido;
+  document.getElementById("pago").options[0].text = t.metodoPago;
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById("pago").options[i].text = t.opcionesPago[i-1];
+  }
+  document.getElementById("btnConfirmar").textContent = t.btnConfirmar;
+
   const cita = JSON.parse(localStorage.getItem("citaSeleccionada"));
   const info = document.getElementById("infoCita");
 
   if (!cita) {
-    info.textContent = "No se ha seleccionado ninguna cita.";
+    info.textContent = t.noSeleccion;
     document.getElementById("formRegistro").style.display = "none";
   } else {
     info.textContent = `Fecha: ${cita.fecha} | Hora: ${cita.hora}`;
