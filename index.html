@@ -56,7 +56,6 @@
     }
     #mensajeCancelacion {
       margin-top: 15px;
-      color: #dc3545;
       font-weight: bold;
     }
   </style>
@@ -79,8 +78,8 @@
     <input type="text" id="nombreCancel" placeholder="Nombre" required />
     <input type="text" id="apellidoCancel" placeholder="Apellido" required />
     <input type="date" id="fechaCancel" required />
-    <input type="time" id="horaCancel" required />
-    <button type="submit">Cancelar cita</button>
+    <input type="text" id="horaCancel" placeholder="Hora (ej. 14:00)" required />
+    <button type="submit" id="botonEnviarCancel">Cancelar cita</button>
   </form>
 
   <div id="mensajeCancelacion"></div>
@@ -96,7 +95,7 @@
         placeholderNombre: "Nombre",
         placeholderApellido: "Apellido",
         placeholderFecha: "Fecha",
-        placeholderHora: "Hora",
+        placeholderHora: "Hora (ej. 14:00)",
         cancelarBtn: "Cancelar cita",
         cancelacionExitosa: "Tu cita será cancelada. Para terminar de cancelar tu cita es necesario que envíes el WhatsApp de cancelación que se te mostrará a continuación.",
         cancelacionNoEncontrada: "No se encontró ninguna cita con esos datos o no puedes cancelar con menos de 2 días de anticipación.",
@@ -110,10 +109,10 @@
         placeholderNombre: "First Name",
         placeholderApellido: "Last Name",
         placeholderFecha: "Date",
-        placeholderHora: "Time",
+        placeholderHora: "Time (e.g. 14:00)",
         cancelarBtn: "Cancel appointment",
-        cancelacionExitosa: "Your appointment will be cancelled. To finish cancelling your appointment, send the WhatsApp cancellation message shown next.",
-        cancelacionNoEncontrada: "No appointment found with that data or cancellation is not allowed less than 2 days before.",
+        cancelacionExitosa: "Your appointment will be cancelled. To finish cancelling your appointment, send the WhatsApp cancellation message that will appear next.",
+        cancelacionNoEncontrada: "No appointment found with that data or cancellation must be at least 2 days in advance.",
       }
     };
 
@@ -124,7 +123,7 @@
       localStorage.setItem("idiomaSeleccionado", idioma);
       const t = textos[idioma];
 
-      document.getElementById("Rosario's Nails").textContent = t.titulo;
+      document.getElementById("titulo").textContent = t.titulo;
       document.getElementById("botonCatalogo").textContent = t.botonCatalogo;
       document.getElementById("botonAgendar").textContent = t.botonAgendar;
       document.getElementById("botonCancelar").textContent = t.botonCancelar;
@@ -133,7 +132,8 @@
       document.getElementById("apellidoCancel").placeholder = t.placeholderApellido;
       document.getElementById("fechaCancel").placeholder = t.placeholderFecha;
       document.getElementById("horaCancel").placeholder = t.placeholderHora;
-      document.querySelector("#formCancelar button").textContent = t.cancelarBtn;
+      document.getElementById("botonEnviarCancel").textContent = t.cancelarBtn;
+      document.getElementById("mensajeCancelacion").textContent = "";
     }
 
     window.addEventListener("load", () => {
@@ -155,7 +155,6 @@
     document.getElementById("botonCancelar").addEventListener("click", () => {
       document.getElementById("formCancelar").style.display = "block";
       document.getElementById("mensajeCancelacion").textContent = "";
-      actualizarIdioma();
     });
 
     document.getElementById("formCancelar").addEventListener("submit", (e) => {
@@ -167,15 +166,16 @@
       const nombre = document.getElementById("nombreCancel").value.trim().toLowerCase();
       const apellido = document.getElementById("apellidoCancel").value.trim().toLowerCase();
       const fecha = document.getElementById("fechaCancel").value;
-      const hora = document.getElementById("horaCancel").value;
+      const hora = document.getElementById("horaCancel").value.trim();
 
       if (!nombre || !apellido || !fecha || !hora) return;
 
       let citas = JSON.parse(localStorage.getItem("citasConfirmadas") || "[]");
 
       const hoy = new Date();
-      const fechaCita = new Date(`${fecha}T00:00`);
-      const diferenciaDias = (fechaCita - hoy) / (1000 * 60 * 60 * 24);
+      const fechaCita = new Date(fecha);
+      const diffTime = fechaCita.getTime() - hoy.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
       const indexCita = citas.findIndex(cita =>
         cita.nombre.toLowerCase() === nombre &&
@@ -184,8 +184,8 @@
         cita.hora === hora
       );
 
-      if (indexCita === -1 || diferenciaDias < 2) {
-        alert(t.cancelacionNoEncontrada);
+      if (indexCita === -1 || diffDays < 2) {
+        document.getElementById("mensajeCancelacion").textContent = t.cancelacionNoEncontrada;
         return;
       }
 
@@ -199,6 +199,7 @@
       const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
       window.open(urlWhatsApp, "_blank");
 
+      document.getElementById("formCancelar").reset();
       document.getElementById("formCancelar").style.display = "none";
     });
   </script>
