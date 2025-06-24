@@ -84,9 +84,6 @@
   <button onclick="confirmarCita()">Confirmar Cita</button>
 
   <script>
-    const cita = JSON.parse(localStorage.getItem("citaSeleccionada"));
-    if (!cita) {
-      alert("No se ha seleccionado ningún horario.");
       window.location.href = "agendar.html";
     }
 
