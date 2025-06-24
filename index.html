@@ -2,150 +2,167 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Título</title>
+  <title>Business Nails</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff0f5;
+      font-family: Arial, sans-serif;
+      background: #fefefe;
+      padding: 40px;
       text-align: center;
-      padding: 20px;
     }
     h1 {
-      color: #d36ba0;
+      font-size: 2em;
       margin-bottom: 30px;
     }
     button {
-      font-size: 18px;
       padding: 15px 30px;
       margin: 10px;
-      border-radius: 12px;
+      font-size: 1.1em;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
-      background-color: #d36ba0;
+      background-color: #007bff;
       color: white;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s;
     }
     button:hover {
-      background-color: #b7598d;
+      background-color: #0056b3;
     }
-    #seccionCancelar {
-      margin-top: 20px;
-      border: 2px solid #d36ba0;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 350px;
-      margin-left: auto;
-      margin-right: auto;
+    #idiomaSelect {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    #cancelarModal {
       display: none;
-      background-color: #fff;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
     }
-    #seccionCancelar p {
-      font-size: 16px;
-      margin-bottom: 15px;
+    #cancelarContenido {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
     }
-    #seccionCancelar button {
-      width: 45%;
-      margin: 5px 2%;
+    input {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
-    #seccionCancelar button#confirmarCancelacionIndex {
-      background-color: #b03050;
+    #cancelarMensaje {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .cerrar {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2em;
+      color: red;
     }
   </style>
 </head>
 <body>
-  <h1>Título</h1>
 
-  <button id="btnCatalogo">Catálogo de diseños</button>
-  <button id="btnAgendar">Agendar cita</button>
-  <button id="btnCancelarCitaIndex" style="background-color:#b03050;">Cancelar mi cita</button>
+  <select id="idiomaSelect">
+    <option value="es">Español</option>
+    <option value="en">English</option>
+  </select>
 
-  <div id="seccionCancelar">
-    <p id="detalleCitaIndex"></p>
-    <button id="confirmarCancelacionIndex">Confirmar cancelación</button>
-    <button id="cerrarCancelacionIndex">Cancelar</button>
+  <h1>Business Nails</h1>
+
+  <button onclick="window.location.href='catalogo.html'">Catálogo</button>
+  <button onclick="mostrarInstruccion()">Agendar</button>
+  <button onclick="abrirCancelar()">Cancelar cita</button>
+
+  <!-- Modal para cancelar cita -->
+  <div id="cancelarModal">
+    <div id="cancelarContenido">
+      <span class="cerrar" onclick="cerrarCancelar()">✖</span>
+      <h3>Cancelar Cita</h3>
+      <label>Nombre:</label>
+      <input type="text" id="nombreCancelar" placeholder="Tu nombre">
+      <label>Fecha de la cita (AAAA-MM-DD):</label>
+      <input type="date" id="fechaCancelar">
+      <button onclick="cancelarCita()">Confirmar Cancelación</button>
+      <div id="cancelarMensaje"></div>
+    </div>
   </div>
 
   <script>
-    const telefonoDueña = '521XXXXXXXXXX'; // Cambia aquí al número real sin signos ni espacios
-
-    // Botones principales
-    document.getElementById('btnCatalogo').addEventListener('click', () => {
-      window.location.href = 'catalogo.html';
+    // Idioma (opcional para desarrollo)
+    document.getElementById("idiomaSelect").addEventListener("change", function () {
+      alert("Funcionalidad de idioma aún en desarrollo para este demo.");
     });
 
-    document.getElementById('btnAgendar').addEventListener('click', () => {
-      alert('Para agendar primero selecciona en catálogo para escoger un estilo y posteriormente selecciona "agendar"');
-    });
+    function mostrarInstruccion() {
+      alert("Para agendar primero selecciona un diseño en el Catálogo, luego presiona 'Agendar'.");
+    }
 
-    // Cancelar cita botón y sección
-    const btnCancelar = document.getElementById('btnCancelarCitaIndex');
-    const seccionCancelar = document.getElementById('seccionCancelar');
-    const detalleCitaIndex = document.getElementById('detalleCitaIndex');
-    const confirmarCancelacionIndex = document.getElementById('confirmarCancelacionIndex');
-    const cerrarCancelacionIndex = document.getElementById('cerrarCancelacionIndex');
+    function abrirCancelar() {
+      document.getElementById("cancelarModal").style.display = "flex";
+      document.getElementById("cancelarMensaje").innerHTML = "";
+    }
 
-    btnCancelar.addEventListener('click', () => {
-      const cita = {
-        fecha: localStorage.getItem('fechaSeleccionada'),
-        hora: localStorage.getItem('horaSeleccionada'),
-        nombre: localStorage.getItem('nombreCliente') || 'Cliente',
-        diseno: localStorage.getItem('disenoSeleccionado') || 'Diseño desconocido'
-      };
+    function cerrarCancelar() {
+      document.getElementById("cancelarModal").style.display = "none";
+      document.getElementById("nombreCancelar").value = "";
+      document.getElementById("fechaCancelar").value = "";
+    }
 
-      if (!cita.fecha || !cita.hora) {
-        alert('No tienes cita agendada.');
+    function cancelarCita() {
+      const nombre = document.getElementById("nombreCancelar").value.trim().toLowerCase();
+      const fecha = document.getElementById("fechaCancelar").value;
+      const mensajeDiv = document.getElementById("cancelarMensaje");
+
+      if (!nombre || !fecha) {
+        mensajeDiv.innerText = "Por favor completa todos los campos.";
+        mensajeDiv.style.color = "red";
         return;
       }
-
-      detalleCitaIndex.textContent = `Tu cita: ${cita.diseno}, ${cita.fecha} a las ${cita.hora}`;
-      seccionCancelar.style.display = 'block';
-    });
-
-    confirmarCancelacionIndex.addEventListener('click', () => {
-      const cita = {
-        fecha: localStorage.getItem('fechaSeleccionada'),
-        hora: localStorage.getItem('horaSeleccionada'),
-        nombre: localStorage.getItem('nombreCliente') || 'Cliente',
-        diseno: localStorage.getItem('disenoSeleccionado') || 'Diseño desconocido'
-      };
 
       const hoy = new Date();
-      const fechaCita = new Date(cita.fecha);
-      const diffDias = (fechaCita - hoy) / (1000 * 60 * 60 * 24);
+      const fechaCita = new Date(fecha);
+      const diff = (fechaCita - hoy) / (1000 * 60 * 60 * 24);
 
-      if (diffDias < 2) {
-        alert('Solo puedes cancelar con al menos 2 días de anticipación.');
+      if (diff < 2) {
+        mensajeDiv.innerText = "Solo puedes cancelar citas con al menos 2 días de anticipación.";
+        mensajeDiv.style.color = "red";
         return;
       }
 
-      let citas = JSON.parse(localStorage.getItem('citas')) || [];
-
-      citas = citas.filter(c => !(c.fecha === cita.fecha && c.hora === cita.hora && c.nombre === cita.nombre));
-
-      localStorage.setItem('citas', JSON.stringify(citas));
-
-      const mensaje = encodeURIComponent(
-        `La cita de ${cita.nombre} para ${cita.diseno} el día ${cita.fecha} a las ${cita.hora} ha sido CANCELADA.`
+      const citas = JSON.parse(localStorage.getItem("citasAgendadas") || "[]");
+      const index = citas.findIndex(c =>
+        c.fecha === fecha && c.nombre && c.nombre.toLowerCase().includes(nombre)
       );
-      window.open(`https://wa.me/${telefonoDueña}?text=${mensaje}`, '_blank');
 
-      localStorage.removeItem('fechaSeleccionada');
-      localStorage.removeItem('horaSeleccionada');
-      localStorage.removeItem('nombreCliente');
-      localStorage.removeItem('disenoSeleccionado');
-      localStorage.removeItem('duracion');
+      if (index >= 0) {
+        const cita = citas[index];
+        citas.splice(index, 1);
+        localStorage.setItem("citasAgendadas", JSON.stringify(citas));
 
-      alert('Cita cancelada con éxito.');
+        mensajeDiv.innerText = "Cita cancelada exitosamente.";
+        mensajeDiv.style.color = "green";
 
-      seccionCancelar.style.display = 'none';
+        // WhatsApp de la dueña
+        const mensaje = `❌ Cancelación de cita:\n👤 Cliente: ${cita.nombre || nombre}\n📅 Fecha: ${cita.fecha}\n💅 Diseño: ${cita.diseno || 'No especificado'}`;
+        const numero = "523338093018"; // Coloca el número real
+        const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
-      location.reload();
-    });
-
-    cerrarCancelacionIndex.addEventListener('click', () => {
-      seccionCancelar.style.display = 'none';
-    });
+        console.log("WhatsApp cancelación:", link);
+        // window.open(link, "_blank"); // <-- Descomenta si deseas que se abra automáticamente
+      } else {
+        mensajeDiv.innerText = "No se encontró una cita con ese nombre y fecha.";
+        mensajeDiv.style.color = "red";
+      }
+    }
   </script>
 </body>
 </html>
