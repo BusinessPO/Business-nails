@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gracias</title>
+  <title>Thanks</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -65,60 +65,7 @@
 
   <h1 id="tituloGracias">¡Gracias por agendar tu cita!</h1>
   <p id="mensajeGracias">Tu cita ha sido registrada correctamente. Te esperamos pronto. 💅</p>
-
-  <div class="diseno" data-nombre="Uñas francesas" data-costo="300" data-duracion="60">
-    <h2>Uñas francesas</h2>
-    <p>Clásico diseño francés, elegante y sencillo.</p>
-    <p>Costo: $300 MXN</p>
-    <p>Duración: 60 minutos</p>
-    <button onclick="seleccionarDiseño(this)">Seleccionar diseño</button>
-  </div>
-
-  <div class="diseno" data-nombre="Uñas con brillo" data-costo="400" data-duracion="75">
-    <h2>Uñas con brillo</h2>
-    <p>Diseño con esmalte y detalles brillantes.</p>
-    <p>Costo: $400 MXN</p>
-    <p>Duración: 75 minutos</p>
-    <button onclick="seleccionarDiseño(this)">Seleccionar diseño</button>
-  </div>
-
-  <div class="diseno" data-nombre="Uñas artísticas" data-costo="550" data-duracion="90">
-    <h2>Uñas artísticas</h2>
-    <p>Diseños personalizados y creativos.</p>
-    <p>Costo: $550 MXN</p>
-    <p>Duración: 90 minutos</p>
-    <button onclick="seleccionarDiseño(this)">Seleccionar diseño</button>
-  </div>
-
-  <button id="botonInicio" onclick="window.location.href='index.html'">Volver al inicio</button>
-
-  <script>
-    // Obtener idioma guardado o español por defecto
-    const idioma = localStorage.getItem("idiomaSeleccionado") || "es";
-
-    const textos = {
-      es: {
-        titulo: "¡Gracias por agendar tu cita!",
-        mensaje: "Tu cita ha sido registrada correctamente. Te esperamos pronto. 💅",
-        botonInicio: "Volver al inicio",
-        confirmacion: "Has seleccionado el diseño",
-        costo: "Costo",
-        duracion: "Duración",
-        minutos: "minutos",
-        pregunta: "¿Quieres ver fechas y horarios disponibles?"
-      },
-      en: {
-        titulo: "Thanks for scheduling your appointment!",
-        mensaje: "Your appointment has been successfully registered. See you soon. 💅",
-        botonInicio: "Back to Home",
-        confirmacion: "You have selected the design",
-        costo: "Cost",
-        duracion: "Duration",
-        minutos: "minutes",
-        pregunta: "Do you want to see available dates and times?"
-      }
-    };
-
+  
     // Aplicar textos según idioma
     const t = textos[idioma];
     document.getElementById("tituloGracias").textContent = t.titulo;
